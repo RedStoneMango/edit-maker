@@ -9,7 +9,11 @@ arg_parser.add_argument("graphics", help="The graphics to be used in the edit", 
 arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around tempo", type=float, default=100, nargs='?')
 
 import librosa
-from moviepy import AudioFileClip, ImageClip, concatenate_videoclips
+import magic
+import os
+from moviepy import AudioFileClip, ImageClip, VideoFileClip, concatenate_videoclips
+
+is_video_cache = {}
 
 def main():
     args = arg_parser.parse_args()
@@ -33,24 +37,44 @@ def build_clips(audio_data, graphics):
     previous = 0
 
     for beat in beats:
-        clips.append(
-            ImageClip(
-                graphics[current_graphic],
-                duration=beat - previous,
-            )
-        )
+        clips.append(instantiate_clip(
+            graphics[current_graphic],
+            duration=beat - previous
+        ))
         current_graphic = (current_graphic + 1) % len(graphics)
         previous = beat
 
     # Tail after the last beat
-    clips.append(
-        ImageClip(
+    clips.append(instantiate_clip(
             graphics[current_graphic],
-            duration=duration - previous,
-        )
-    )
+            duration=duration - previous
+    ))
 
     return clips
+
+def instantiate_clip(graphic, duration):
+    if is_video(graphic):
+        clip = VideoFileClip(
+            graphic
+        ).subclipped(0, duration)
+    else:
+        clip = ImageClip(
+            graphic,
+            duration=duration
+        )
+
+    return clip
+
+def is_video(file):
+    if not file in is_video_cache:
+        try:
+            mime_type = magic.from_file(file, mime=True)
+            is_video_cache[file] = \
+                mime_type.startswith('video/') or mime_type == "image/gif"
+        except Exception:
+            is_video_cache[file] = False
+    
+    return is_video_cache[file]
 
 def render(clips, audio_data, out):
     _, _, audio = audio_data
