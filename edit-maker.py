@@ -3,13 +3,13 @@
 import argparse
 
 def size_type(strings):
-    if strings.lower() == "auto":
+    if strings.lower() == "none":
         return (-1,-1)
     
     strings = strings.replace("(", "").replace(")", "")
     tuple_int = tuple(map(int, strings.split(",")))
     if len(tuple_int) != 2:
-        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or 'auto'")
+        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or 'none'")
     if tuple_int[0] <= 0 or tuple_int[1] <= 0:
         raise argparse.ArgumentTypeError("Should be greater than 0")
     return tuple_int
@@ -19,7 +19,7 @@ arg_parser.add_argument("audio", help="The audio file to use for the edit", type
 arg_parser.add_argument("output", help="The output file to save the edit in", type=str)
 arg_parser.add_argument("graphics", help="The graphics to be used in the edit", type=str, nargs="+")
 arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file", type=float, default=100, required=False)
-arg_parser.add_argument("--size", "-s", help="The size of the resulting edit. This will scale all graphics to this value while respecting the aspect ratio. Using 'auto', the size if the max with/height of the graphics. Without this option, no scaling is applied", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|auto]")
+arg_parser.add_argument("--size", "-s", help="The size of the resulting edit. This will scale all graphics to this value while respecting the aspect ratio. Using 'none', no scaling is applied. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|none]")
 
 import librosa
 import magic
@@ -31,7 +31,7 @@ def main():
     args = arg_parser.parse_args()
 
     size = args.size
-    if size != None and size[0] == -1:
+    if size == None:
         size = find_auto_size(args.graphics)
     
     audio_data = analyze_audio(args.audio, args.beat_tightness)
@@ -90,9 +90,8 @@ def instantiate_clip(graphic, duration, size):
             duration=duration
         )
     
-    if size != None:
-            aspect_ratio = clip.w / clip.h # Clip's own aspect_ratio is not consistently exposed for all codecs
-            if aspect_ratio > 1:
+    if size != None and size[0] != -1:
+            if clip.w > clip.h:
                 clip = clip.resized(width=size[0])
             else:
                 clip = clip.resized(height=size[1])
