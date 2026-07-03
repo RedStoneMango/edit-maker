@@ -1,25 +1,46 @@
 #!/usr/bin/env python3
 
 import argparse
+import os
 
 def size_type(strings):
     if strings.lower() == "none":
         return (-1,-1)
     
     strings = strings.replace("(", "").replace(")", "")
-    tuple_int = tuple(map(int, strings.split(",")))
+    try:
+        tuple_int = tuple(map(int, strings.split("x")))
+    except:
+        try:
+            tuple_int = tuple(map(int, strings.split(",")))
+        except:
+            raise argparse.ArgumentTypeError("Values should be positive integers")
     if len(tuple_int) != 2:
-        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or 'none'")
+        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT / WIDTHxHEIGHT or 'none'")
     if tuple_int[0] <= 0 or tuple_int[1] <= 0:
         raise argparse.ArgumentTypeError("Should be greater than 0")
     return tuple_int
 
+def file_type(string):
+    if not os.path.isfile(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' does not exist")
+    return string
+
+def positive_float_type(string):
+    try:
+        f = float(string)
+    except:
+        raise argparse.ArgumentTypeError("Should be a (decimal) number")
+    if f < 0:
+        raise argparse.ArgumentTypeError("Should be geater or equal to 0")
+    return f
+
 arg_parser = argparse.ArgumentParser("edit-maker", description="Generates TikTok edits")
-arg_parser.add_argument("audio", help="The audio file to use for the edit", type=str)
-arg_parser.add_argument("output", help="The output file to save the edit in", type=str)
-arg_parser.add_argument("graphics", help="The graphics to be used in the edit", type=str, nargs="+")
-arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file", type=float, default=100, required=False)
-arg_parser.add_argument("--size", "-s", help="The size of the resulting edit. This will scale all graphics to this value while respecting the aspect ratio. Using 'none', no scaling is applied. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|none]")
+arg_parser.add_argument("audio", help="The audio file to use for the edit", type=file_type)
+arg_parser.add_argument("output", help="The output file to save the edit in", type=str) # Output is not required to exist, therefore no file_type
+arg_parser.add_argument("graphics", help="The graphics to be used in the edit", type=file_type, nargs="+")
+arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
+arg_parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Using 'none', no scaling is applied. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT|none]")
 
 import librosa
 import magic
