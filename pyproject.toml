@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "edit-maker"
+version = "0.1.0"
+description = "Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed."
+requires-python = ">=3.11"
+
+dependencies = [
+    "librosa",
+    "moviepy",
+    "numpy",
+    "Pillow",
+    "python-magic",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[project.scripts]
+edit-maker = "edit_maker.__main__:main"
