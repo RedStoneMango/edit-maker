@@ -3,10 +3,7 @@
 import argparse
 import os
 
-def size_type(strings):
-    if strings.lower() == "none":
-        return (-1,-1)
-    
+def size_type(strings):    
     strings = strings.replace("(", "").replace(")", "")
     try:
         tuple_int = tuple(map(int, strings.split("x")))
@@ -16,7 +13,7 @@ def size_type(strings):
         except:
             raise argparse.ArgumentTypeError("Values should be positive integers")
     if len(tuple_int) != 2:
-        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT / WIDTHxHEIGHT or 'none'")
+        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or WIDTHxHEIGHT")
     if tuple_int[0] <= 0 or tuple_int[1] <= 0:
         raise argparse.ArgumentTypeError("Should be greater than 0")
     return tuple_int
@@ -40,7 +37,7 @@ arg_parser.add_argument("audio", help="The audio file to use for the edit", type
 arg_parser.add_argument("output", help="The output file to save the edit in", type=str) # Output is not required to exist, therefore no file_type
 arg_parser.add_argument("graphics", help="The graphics to be used in the edit", type=file_type, nargs="+")
 arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
-arg_parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Using 'none', no scaling is applied. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT|none]")
+arg_parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
 
 import librosa
 import magic
@@ -62,7 +59,7 @@ def main():
 def find_auto_size(graphics):
     size = (0, 0)
     for graphic in graphics:
-        inst = instantiate_clip(graphic, None, None)
+        inst = instantiate_clip(graphic)
         size = tuple(max(a, b) for a, b in zip(size, inst.size))
     return size
 
@@ -81,7 +78,7 @@ def build_clips(audio_data, graphics, size):
     previous = 0
 
     for beat in beats:
-        clips.append(instantiate_clip(
+        clips.append(access_clip(
             graphics[current_graphic],
             beat - previous,
             size
@@ -90,7 +87,7 @@ def build_clips(audio_data, graphics, size):
         previous = beat
 
     # Tail after the last beat
-    clips.append(instantiate_clip(
+    clips.append(access_clip(
             graphics[current_graphic],
             duration - previous,
             size
@@ -98,7 +95,20 @@ def build_clips(audio_data, graphics, size):
 
     return clips
 
-def instantiate_clip(graphic, duration, size):
+def access_clip(graphic, duration, size):
+    clip = instantiate_clip(graphic, duration=duration)
+
+    canvas_w, canvas_h = size
+    if canvas_w / clip.w < canvas_h / clip.h:
+        clip = clip.resized(width=size[0])
+    else:
+        clip = clip.resized(height=size[1])
+    
+    return clip
+
+# When needed, directly provide the duration value to improve performance
+#  with ImageClip creation
+def instantiate_clip(graphic, duration=None):
     if is_video(graphic):
         clip = VideoFileClip(
             graphic
@@ -110,14 +120,7 @@ def instantiate_clip(graphic, duration, size):
             graphic,
             duration=duration
         )
-    
-    if size != None and size[0] != -1:
-            canvas_w, canvas_h = size
-            if canvas_w / clip.w < canvas_h / clip.h:
-                clip = clip.resized(width=size[0])
-            else:
-                clip = clip.resized(height=size[1])
-    
+
     return clip
 
 def is_video(file):
