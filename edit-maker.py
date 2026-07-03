@@ -41,7 +41,26 @@ arg_parser.add_argument("--size", "-s", help="The size of the resulting edit in 
 
 import librosa
 import magic
-from moviepy import AudioFileClip, ImageClip, VideoFileClip, concatenate_videoclips
+from moviepy import AudioFileClip, ImageClip, VideoFileClip, CompositeVideoClip,Effect, vfx, concatenate_videoclips
+from PIL import ImageFilter, Image
+import numpy as np
+from dataclasses import dataclass
+
+@dataclass
+class Blur(Effect):
+    intensity: float = None
+
+    def apply(self, clip):
+        if self.intensity is None:
+            self.intensity = 0
+
+        def filter(gf, t):
+            im = gf(t).copy()
+            image = Image.fromarray(im)
+            blurred = image.filter(ImageFilter.GaussianBlur(radius=self.intensity))
+            return np.array(blurred)
+        
+        return clip.transform(filter)
 
 is_video_cache = {}
 
@@ -98,13 +117,14 @@ def build_clips(audio_data, graphics, size):
 def access_clip(graphic, duration, size):
     clip = instantiate_clip(graphic, duration=duration)
 
-    canvas_w, canvas_h = size
-    if canvas_w / clip.w < canvas_h / clip.h:
-        clip = clip.resized(width=size[0])
-    else:
-        clip = clip.resized(height=size[1])
+    scale = contain_scale(
+        clip.w, clip.h,
+        size[0], size[1]
+    )
+
+    clip = clip.resized(scale)
     
-    return clip
+    return blur_background(clip, size)
 
 # When needed, directly provide the duration value to improve performance
 #  with ImageClip creation
@@ -122,6 +142,28 @@ def instantiate_clip(graphic, duration=None):
         )
 
     return clip
+
+def cover_scale(w, h, tw, th):
+    return max(tw / w, th / h)
+
+def contain_scale(w, h, tw, th):
+    return min(tw / w, th / h)
+
+def blur_background(clip, canvas_size):
+    if clip.size == canvas_size:
+        return clip
+    
+    scale = cover_scale(
+        clip.w, clip.h,
+        canvas_size[0], canvas_size[1]
+    )
+
+    bg = clip \
+        .resized(scale) \
+        .with_effects([Blur(intensity=200)]) \
+        .with_position("center")
+
+    return CompositeVideoClip([bg, clip.with_position("center")], size=canvas_size)
 
 def is_video(file):
     if not file in is_video_cache:
