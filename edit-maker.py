@@ -91,7 +91,8 @@ def instantiate_clip(graphic, duration, size):
         )
     
     if size != None and size[0] != -1:
-            if clip.w > clip.h:
+            canvas_w, canvas_h = size
+            if canvas_w / clip.w < canvas_h / clip.h:
                 clip = clip.resized(width=size[0])
             else:
                 clip = clip.resized(height=size[1])
