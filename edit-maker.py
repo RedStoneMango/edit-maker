@@ -38,10 +38,11 @@ arg_parser.add_argument("output", help="The output file to save the edit in", ty
 arg_parser.add_argument("graphics", help="The graphics to be used in the edit", type=file_type, nargs="+")
 arg_parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
 arg_parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
+arg_parser.add_argument("--no-background-blur", "-B", help="Disables background blur for graphics whose size does not match the canvas size. Instead the outer part of the graphic will be black", action="store_true")
 
 import librosa
 import magic
-from moviepy import AudioFileClip, ImageClip, VideoFileClip, CompositeVideoClip,Effect, vfx, concatenate_videoclips
+from moviepy import AudioFileClip, ImageClip, VideoFileClip, CompositeVideoClip,Effect, concatenate_videoclips
 from PIL import ImageFilter, Image
 import numpy as np
 from dataclasses import dataclass
@@ -61,6 +62,10 @@ class Blur(Effect):
             return np.array(blurred)
         
         return clip.transform(filter)
+    
+@dataclass
+class RenderOptions:
+    blur: bool
 
 is_video_cache = {}
 
@@ -72,7 +77,9 @@ def main():
         size = find_auto_size(args.graphics)
     
     audio_data = analyze_audio(args.audio, args.beat_tightness)
-    clips = build_clips(audio_data, args.graphics, size)
+    clips = build_clips(audio_data, args.graphics, size, RenderOptions(
+        blur=not args.no_background_blur
+    ))
     render(clips, audio_data, args.output)
 
 def find_auto_size(graphics):
@@ -89,7 +96,7 @@ def analyze_audio(audio_path, tightness):
     audio = AudioFileClip(audio_path)
     return (beats, audio.duration, audio)
 
-def build_clips(audio_data, graphics, size):
+def build_clips(audio_data, graphics, size, render_options:RenderOptions):
     beats, duration, _ = audio_data
     clips = []
 
@@ -100,7 +107,8 @@ def build_clips(audio_data, graphics, size):
         clips.append(access_clip(
             graphics[current_graphic],
             beat - previous,
-            size
+            size,
+            render_options
         ))
         current_graphic = (current_graphic + 1) % len(graphics)
         previous = beat
@@ -109,12 +117,13 @@ def build_clips(audio_data, graphics, size):
     clips.append(access_clip(
             graphics[current_graphic],
             duration - previous,
-            size
+            size,
+            render_options
     ))
 
     return clips
 
-def access_clip(graphic, duration, size):
+def access_clip(graphic, duration, size, render_options:RenderOptions):
     clip = instantiate_clip(graphic, duration=duration)
 
     scale = contain_scale(
@@ -124,7 +133,9 @@ def access_clip(graphic, duration, size):
 
     clip = clip.resized(scale)
     
-    return blur_background(clip, size)
+    if render_options.blur:
+        return blur_background(clip, size)
+    return clip
 
 # When needed, directly provide the duration value to improve performance
 #  with ImageClip creation
