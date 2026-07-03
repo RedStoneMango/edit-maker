@@ -1,5 +1,30 @@
+from moviepy import vfx
+
 def cover_scale(w, h, tw, th):
     return max(tw / w, th / h)
 
 def contain_scale(w, h, tw, th):
     return min(tw / w, th / h)
+
+def ease_out(x):
+    return 1 - (1 - x) ** 3
+
+def zoom_out(start_scale, duration):
+    return vfx.Resize(
+        lambda t: start_scale - (start_scale - 1.0) * ease_out(min(t / duration, 1.0))
+    )
+
+def zoom_in(start_scale, duration):
+    return vfx.Resize(
+        lambda t: start_scale + (1.0 - start_scale) * ease_out(min(t / duration, 1.0))
+    )
+
+def rotate_out(start_angle, duration):
+    return vfx.Rotate(
+        lambda t: start_angle * (1 - ease_out(min(t / duration, 1.0)))
+    )
+
+def rotate_in(end_angle, duration):
+    return vfx.Rotate(
+        lambda t: end_angle * ease_out(min(t / duration, 1.0))
+    )

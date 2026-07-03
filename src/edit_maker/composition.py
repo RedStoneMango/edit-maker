@@ -1,8 +1,9 @@
 from .graphics import instantiate_clip
-from .records import RenderOptions
+from .dataholders import RenderOptions
 from .utils import contain_scale, cover_scale
 from .effects import Blur
-from .records import AudioData
+from .dataholders import AudioData
+from .transition import apply_transitions
 
 from moviepy import CompositeVideoClip
 
@@ -12,9 +13,15 @@ def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptio
 
     current_graphic = 0
     previous = 0
+    beat_count = 1
 
     for beat in audio_data.beats:
-        clips.append(access_clip(
+        if beat_count < render_options.graphic_beats:
+            beat_count += 1
+            continue
+        beat_count = 1
+
+        clips.append(prepare_clip(
             graphics[current_graphic],
             beat - previous,
             size,
@@ -24,7 +31,7 @@ def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptio
         previous = beat
 
     # Tail after the last beat
-    clips.append(access_clip(
+    clips.append(prepare_clip(
             graphics[current_graphic],
             audio_data.duration - previous,
             size,
@@ -40,7 +47,7 @@ def find_auto_size(graphics):
         size = tuple(max(a, b) for a, b in zip(size, inst.size))
     return size
 
-def access_clip(graphic, duration, size, render_options:RenderOptions):
+def prepare_clip(graphic, duration, size, render_options:RenderOptions):
     clip = instantiate_clip(graphic, duration=duration)
 
     scale = contain_scale(
@@ -49,6 +56,8 @@ def access_clip(graphic, duration, size, render_options:RenderOptions):
     )
 
     clip = clip.resized(scale)
+
+    clip = apply_transitions(clip)
     
     if render_options.blur:
         return blur_background(clip, size)

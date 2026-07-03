@@ -27,8 +27,17 @@ def positive_float_type(string):
     except:
         raise argparse.ArgumentTypeError("Should be a (decimal) number")
     if f < 0:
-        raise argparse.ArgumentTypeError("Should be geater or equal to 0")
+        raise argparse.ArgumentTypeError("Should be greater or equal to 0")
     return f
+
+def positive_int_type(string):
+    try:
+        i = int(string)
+    except:
+        raise argparse.ArgumentTypeError("Should be an integer")
+    if i <= 0:
+        raise argparse.ArgumentTypeError("Should be greater than 0")
+    return i
 
 def parse_args():
     parser = argparse.ArgumentParser("edit-maker", description="Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed.")
@@ -39,5 +48,6 @@ def parse_args():
     parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
     parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
     parser.add_argument("--no-background-blur", "-B", help="Disables background blur for graphics whose size does not match the canvas size. Instead the outer part of the graphic will be black", action="store_true")
+    parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed", required=False, default=2, type=positive_int_type)
     
     return parser.parse_args()

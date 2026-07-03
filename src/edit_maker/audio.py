@@ -1,4 +1,4 @@
-from .records import AudioData
+from .dataholders import AudioData
 
 import librosa
 from moviepy import AudioFileClip

@@ -1,4 +1,4 @@
-from .records import AudioData
+from .dataholders import AudioData
 
 from moviepy import concatenate_videoclips
 
@@ -11,5 +11,5 @@ def render(clips, audio_data:AudioData, out):
         fps=30,
         codec="libx264",
         audio_codec="aac",
-    audio_bitrate="192k"
+        audio_bitrate="192k"
 )

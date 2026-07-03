@@ -2,7 +2,7 @@ from .cli import parse_args
 from .audio import analyze_audio
 from .composition import build_clips, find_auto_size
 from .renderer import render
-from .records import RenderOptions
+from .dataholders import RenderOptions
 
 
 def main():
@@ -17,7 +17,8 @@ def main():
         args.graphics,
         size,
         RenderOptions(
-            blur=not args.no_background_blur
+            blur=not args.no_background_blur,
+            graphic_beats=args.graphic_beats
         )
     )
 
