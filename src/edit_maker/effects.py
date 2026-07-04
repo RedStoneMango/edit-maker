@@ -1,8 +1,6 @@
-from .utils import zoom_in, zoom_out, rotate_in, rotate_out
-
 from dataclasses import dataclass
 from PIL import Image, ImageFilter
-from moviepy import Effect, vfx
+from moviepy import Effect
 import numpy as np
 
 @dataclass
