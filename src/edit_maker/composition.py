@@ -3,24 +3,20 @@ from .dataholders import RenderOptions
 from .utils import contain_scale, cover_scale
 from .effects import Blur
 from .dataholders import AudioData
-from .transition import apply_transitions
 
 from moviepy import CompositeVideoClip
 from proglog import default_bar_logger
-import numpy as np
 
 def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptions):
-    audio_data
-    clips = []
+    logger = default_bar_logger("bar")
+    logger.iter_bar(beats=range(len(audio_data.beats) + 1)) # Abuse proglog to create bar of length len(audio_data.beats)+1
+    logger(message="[2/5]  Generating beat-syncronized graphic clips")
 
+    clips = []
     current_graphic = 0
     previous = 0
     beat_count = 1
     logger_idx = 0
-
-    logger = default_bar_logger("bar")
-    logger.iter_bar(beats=range(len(audio_data.beats) + 1)) # Abuse proglog to create bar of length len(audio_data.beats)+1
-    logger(message="Generating beat-syncronized graphic clips")
 
     for beat in audio_data.beats:
         if beat_count < render_options.graphic_beats:
@@ -69,8 +65,6 @@ def prepare_clip(graphic, duration, size, render_options:RenderOptions):
 
     clip = clip.resized(scale)
 
-    clip = apply_transitions(clip)
-    
     if render_options.blur:
         return blur_background(clip, size)
     return clip

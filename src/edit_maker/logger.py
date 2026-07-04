@@ -96,9 +96,9 @@ class VideoWriteLogger(TqdmProgressBarLogger):
     def bars_callback(self, bar, attr, value, old_value=None):
         if bar == "chunk" and not self.audio_started:
             self.audio_started = True
-            tqdm.write("Exporting audio")
+            tqdm.write("[4/5]  Exporting audio")
         elif bar == "frame_index" and not self.video_started:
             self.video_started = True
-            tqdm.write("Rendering video")
+            tqdm.write("[5/5]  Rendering video")
 
         return super().bars_callback(bar, attr, value, old_value)

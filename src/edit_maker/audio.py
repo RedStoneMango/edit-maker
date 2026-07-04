@@ -6,7 +6,7 @@ from proglog import default_bar_logger
 
 def analyze_audio(audio_path, tightness):
     logger = default_bar_logger("bar")
-    logger(message="Analyzing audio")
+    logger(message="[1/5]  Analyzing audio")
     logger.iter_bar(progress=range(5))
 
     logger.bars_callback("progress", "index", 1, 0)
