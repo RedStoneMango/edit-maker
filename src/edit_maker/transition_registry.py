@@ -26,6 +26,10 @@ transitions = [
     {
         "name": "zoom-in-fade",
         "factory": lambda prev_outro, this_intro: zoom_in_fade(prev_outro, this_intro)
+    },
+    {
+        "name": "cross-fade",
+        "factory": lambda prev_outro, this_intro: cross_fade(prev_outro, this_intro)
     }
 ]
 
@@ -87,3 +91,16 @@ def zoom_in_fade(prev_outro:VideoClip, this_intro:VideoClip):
         .with_effects([vfx.FadeIn(this_intro.duration)])
 
     return [cropped_outro, cropped_intro]
+
+def cross_fade(prev_outro:VideoClip, this_intro:VideoClip):
+    # Since both clips are played simultaneously, we gotta slow them
+    #  down a bit so the transition duration still fits
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        prev_outro \
+            .with_effects([vfx.CrossFadeOut(transition_duration)]) \
+            .with_speed_scaled(final_duration=transition_duration),
+        this_intro \
+            .with_effects([vfx.CrossFadeIn(transition_duration)]) \
+            .with_speed_scaled(final_duration=transition_duration)
+    ])]
