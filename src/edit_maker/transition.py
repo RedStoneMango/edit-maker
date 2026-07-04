@@ -8,7 +8,7 @@ current_effect = None
 idx = 0
 
 def get_transition_duration(clip_duration):
-    return max(0.1, min(1.0, clip_duration * 0.3))
+    return max(0.1, min(0.7, clip_duration * 0.3))
 
 def create_transitioned(prev_outro:VideoClip, this_intro:VideoClip) -> list[VideoClip]:
     transition = random.choice(transitions)
