@@ -3,6 +3,7 @@ from .audio import analyze_audio
 from .composition import build_clips, find_auto_size
 from .renderer import render
 from .dataholders import RenderOptions
+from .transition import apply_transitions
 
 
 def main():
@@ -20,6 +21,10 @@ def main():
             blur=not args.no_background_blur,
             graphic_beats=args.graphic_beats
         )
+    )
+
+    transitioned_clips = apply_transitions(
+        clips
     )
 
     render(clips, audio, args.output)
