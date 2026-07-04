@@ -23,7 +23,7 @@ def main():
         )
     )
 
-    transitioned_clips = apply_transitions(
+    clips = apply_transitions(
         clips
     )
 
