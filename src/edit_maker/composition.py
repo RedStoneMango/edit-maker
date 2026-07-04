@@ -20,6 +20,7 @@ def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptio
 
     logger = default_bar_logger("bar")
     logger.iter_bar(beats=range(len(audio_data.beats) + 1)) # Abuse proglog to create bar of length len(audio_data.beats)+1
+    logger(message="Generating beat-syncronized graphic clips")
 
     for beat in audio_data.beats:
         if beat_count < render_options.graphic_beats:
