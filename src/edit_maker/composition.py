@@ -6,6 +6,8 @@ from .dataholders import AudioData
 from .transition import apply_transitions
 
 from moviepy import CompositeVideoClip
+from proglog import default_bar_logger
+import numpy as np
 
 def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptions):
     audio_data
@@ -14,6 +16,10 @@ def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptio
     current_graphic = 0
     previous = 0
     beat_count = 1
+    logger_idx = 0
+
+    logger = default_bar_logger("bar")
+    logger.iter_bar(beats=range(len(audio_data.beats) + 1)) # Abuse proglog to create bar of length len(audio_data.beats)+1
 
     for beat in audio_data.beats:
         if beat_count < render_options.graphic_beats:
@@ -30,7 +36,12 @@ def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptio
         current_graphic = (current_graphic + 1) % len(graphics)
         previous = beat
 
+        # Manually update progress bar
+        logger.bars_callback("beats", "index", logger_idx + 1, logger_idx)
+        logger_idx += 1
+
     # Tail after the last beat
+    logger.bars_callback("beats", "index", logger_idx + 1, logger_idx) # Last progress update
     clips.append(prepare_clip(
             graphics[current_graphic],
             audio_data.duration - previous,
