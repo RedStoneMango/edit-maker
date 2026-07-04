@@ -4,8 +4,8 @@ from moviepy import VideoClip, CompositeVideoClip, vfx
 
 transitions = [
     {
-        "name": "none",
-        "factory": lambda prev_outro, this_intro: none(prev_outro, this_intro)
+        "name": "jump",
+        "factory": lambda prev_outro, this_intro: jump(prev_outro, this_intro)
     },
     {
         "name": "black-fade",
@@ -30,10 +30,42 @@ transitions = [
     {
         "name": "cross-fade",
         "factory": lambda prev_outro, this_intro: cross_fade(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-out-top",
+        "factory": lambda prev_outro, this_intro: slide_out_top(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-out-left",
+        "factory": lambda prev_outro, this_intro: slide_out_left(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-out-right",
+        "factory": lambda prev_outro, this_intro: slide_out_right(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-out-bottom",
+        "factory": lambda prev_outro, this_intro: slide_out_bottom(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-in-top",
+        "factory": lambda prev_outro, this_intro: slide_in_top(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-in-left",
+        "factory": lambda prev_outro, this_intro: slide_in_left(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-in-right",
+        "factory": lambda prev_outro, this_intro: slide_in_right(prev_outro, this_intro)
+    },
+    {
+        "name": "slide-in-bottom",
+        "factory": lambda prev_outro, this_intro: slide_in_bottom(prev_outro, this_intro)
     }
 ]
 
-def none(prev_outro:VideoClip, this_intro:VideoClip):
+def jump(prev_outro:VideoClip, this_intro:VideoClip):
     return [prev_outro, this_intro]
 
 def black_fade(prev_outro:VideoClip, this_intro:VideoClip):
@@ -103,4 +135,93 @@ def cross_fade(prev_outro:VideoClip, this_intro:VideoClip):
         this_intro \
             .with_effects([vfx.CrossFadeIn(transition_duration)]) \
             .with_speed_scaled(final_duration=transition_duration)
+    ])]
+
+def slide_out_top(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        this_intro \
+            .with_speed_scaled(final_duration=transition_duration),
+        prev_outro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideOut(transition_duration, "top")])
+    ])]
+
+def slide_out_left(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        this_intro \
+            .with_speed_scaled(final_duration=transition_duration),
+        prev_outro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideOut(transition_duration, "left")])
+    ])]
+
+def slide_out_right(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        this_intro \
+            .with_speed_scaled(final_duration=transition_duration),
+        prev_outro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideOut(transition_duration, "right")])
+    ])]
+
+def slide_out_bottom(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        this_intro \
+            .with_speed_scaled(final_duration=transition_duration),
+        prev_outro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideOut(transition_duration, "bottom")])
+    ])]
+
+
+def slide_in_top(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        prev_outro \
+            .with_speed_scaled(final_duration=transition_duration),
+        this_intro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideIn(transition_duration, "top")])
+    ])]
+
+def slide_in_left(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        prev_outro \
+            .with_speed_scaled(final_duration=transition_duration),
+        this_intro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideIn(transition_duration, "left")])
+    ])]
+
+def slide_in_right(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        prev_outro \
+            .with_speed_scaled(final_duration=transition_duration),
+        this_intro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideIn(transition_duration, "right")])
+    ])]
+
+def slide_in_bottom(prev_outro:VideoClip, this_intro:VideoClip):
+    transition_duration = prev_outro.duration + this_intro.duration
+    return [CompositeVideoClip([
+        prev_outro \
+            .with_speed_scaled(final_duration=transition_duration),
+        this_intro \
+            # Apply speed first so we dont mess up slide effect 
+            .with_speed_scaled(final_duration=transition_duration) \
+            .with_effects([vfx.SlideIn(transition_duration, "bottom")])
     ])]
