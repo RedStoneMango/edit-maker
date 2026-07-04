@@ -6,8 +6,8 @@ from proglog import default_bar_logger
 
 def analyze_audio(audio_path, tightness):
     logger = default_bar_logger("bar")
-    logger.iter_bar(progress=range(5))
     logger(message="Analyzing audio")
+    logger.iter_bar(progress=range(5))
 
     logger.bars_callback("progress", "index", 1, 0)
     y, sr = librosa.load(audio_path)
