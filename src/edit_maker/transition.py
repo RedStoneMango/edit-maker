@@ -14,12 +14,11 @@ def create_transitioned(prev_outro:VideoClip, this_intro:VideoClip) -> list[Vide
     transition = random.choice(transitions)
     return transition.get("factory")(prev_outro, this_intro)
 
-def apply_transitions(clips:list[VideoClip]):
+def apply_transitions(clips:list):
     logger = default_bar_logger("bar")
     logger(message="[3/5]  Applying clip transitions")
 
     result = []
-    clips[0].subclipped
 
     prev_outro = None
     idx = 0
@@ -27,17 +26,17 @@ def apply_transitions(clips:list[VideoClip]):
 
     for clip in logger.iter_bar(clip=clips):
         idx += 1
-        duration = get_transition_duration(clip.duration)
+        trans_duration = get_transition_duration(clip.duration)
 
-        if clip.duration <= 2 * duration:
+        if clip.duration <= 2 * trans_duration:
             result.append(clip)
             continue
         
-        intro = clip.subclipped(0, duration)
-        midtro = clip.subclipped(duration, -duration)
-        outro = clip.subclipped(-duration)
+        intro = clip.subclipped(0, trans_duration)
+        midtro = clip.subclipped(trans_duration, -trans_duration)
+        outro = clip.subclipped(-trans_duration)
 
-        # Generate and append trnasition if applicable
+        # Generate and append transition if applicable
         if prev_outro == None:
             result.append(intro)
         else:

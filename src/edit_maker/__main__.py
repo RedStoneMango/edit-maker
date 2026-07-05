@@ -8,6 +8,10 @@ from .transition import apply_transitions
 
 def main():
     args = parse_args()
+    render_options = RenderOptions(
+        blur=not args.no_background_blur,
+        graphic_beats=args.graphic_beats
+    )
 
     size = args.size or find_auto_size(args.graphics)
 
@@ -17,10 +21,7 @@ def main():
         audio,
         args.graphics,
         size,
-        RenderOptions(
-            blur=not args.no_background_blur,
-            graphic_beats=args.graphic_beats
-        )
+        render_options
     )
 
     clips = apply_transitions(
