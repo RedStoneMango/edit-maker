@@ -20,7 +20,7 @@ class Blur(Effect):
         return clip.transform(filter)
 
 # ChatGPT math
-def darken_clip(clip:VideoClip, intensity: float = 0.5):
+def darken_clip(clip:VideoClip, intensity: float = 0.2):
     def darken_filter(get_frame, t):
         frame = get_frame(t)
         f = frame.astype(float)
@@ -32,7 +32,7 @@ def darken_clip(clip:VideoClip, intensity: float = 0.5):
     return clip.transform(darken_filter)
 
 # ChatGPT math
-def vignette_clip(clip:VideoClip, base_brightness: float = 0.8):
+def vignette_clip(clip:VideoClip, base_brightness: float = 0.6):
     w, h = clip.w, clip.h
     
     # Pre-calculate the static 2D vignette meshgrid once to keep render speeds high

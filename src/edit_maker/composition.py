@@ -1,7 +1,7 @@
 from .graphics import instantiate_clip
 from .dataholders import RenderOptions
 from .utils import contain_scale, cover_scale
-from .effects import Blur, vignette_clip
+from .effects import Blur, vignette_clip, darken_clip
 from .dataholders import AudioData
 
 from moviepy import CompositeVideoClip, ColorClip
@@ -62,15 +62,14 @@ def prepare_clip(graphic, duration, size, render_options:RenderOptions):
         clip.w, clip.h,
         size[0], size[1]
     )
-
     clip = clip.resized(scale)
+
+    clip = vignette_clip(clip)
 
     if render_options.blur:
         clip = blur_background(clip, size)
     else:
         clip = black_background(clip, size)
-
-    clip = vignette_clip(clip)
     
     return clip
 
