@@ -1,5 +1,3 @@
-from .transition_registry import transitions
-
 import random
 from proglog import default_bar_logger
 from moviepy import VideoClip
@@ -10,11 +8,11 @@ idx = 0
 def get_transition_duration(clip_duration):
     return max(0.1, min(1, clip_duration * 0.3))
 
-def create_transitioned(prev_outro:VideoClip, this_intro:VideoClip) -> list[VideoClip]:
+def create_transitioned(prev_outro:VideoClip, this_intro:VideoClip, transitions) -> list[VideoClip]:
     transition = random.choice(transitions)
-    return transition.get("factory")(prev_outro, this_intro)
+    return transition(prev_outro, this_intro)
 
-def apply_transitions(clips:list):
+def apply_transitions(clips:list, transitions):
     logger = default_bar_logger("bar")
     logger(message="[3/5]  Applying clip transitions")
 
@@ -40,7 +38,7 @@ def apply_transitions(clips:list):
         if prev_outro == None:
             result.append(intro)
         else:
-            result.extend(create_transitioned(prev_outro, intro))
+            result.extend(create_transitioned(prev_outro, intro, transitions))
 
         # Always use body
         result.append(midtro)

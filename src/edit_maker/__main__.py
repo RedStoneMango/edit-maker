@@ -31,7 +31,8 @@ def main():
     )
 
     clips = apply_transitions(
-        clips
+        clips,
+        args.transitions
     )
 
     render(clips, audio, args.output)

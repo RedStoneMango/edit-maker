@@ -1,8 +1,10 @@
+from .transition_registry import get_transitions_from_keys, get_transitions_from_bitmask, all_transitions
+from .utils import raise_
+
 import argparse
 import os
 
 def size_type(strings):    
-    strings = strings.replace("(", "").replace(")", "")
     if "," not in strings and "x" not in strings and "×" not in strings:
         raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or WIDTHxHEIGHT")
 
@@ -58,6 +60,25 @@ def deactivatable_positive_float_type(string):
         raise argparse.ArgumentTypeError("Should be greater or equal to 0")
     return f
 
+def transition_list_type(arg):
+    if arg == "":
+        raise argparse.ArgumentTypeError("At least one transition must be specified")
+    
+    try:
+        bitmask = int(arg)
+        return get_transitions_from_bitmask(
+            bitmask,
+            lambda error: raise_(argparse.ArgumentTypeError(error))
+        )
+    except ValueError:
+        pass
+
+    return get_transitions_from_keys(
+        arg.split(","),
+        lambda error: raise_(argparse.ArgumentTypeError(error))
+    )
+
+
 def parse_args():
     parser = argparse.ArgumentParser("edit-maker", description="Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed.")
 
@@ -71,5 +92,6 @@ def parse_args():
     parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="[DARKEN|off]")
     parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="[VIGNETTE|off]")
     parser.add_argument("--seed", "-S", help="The seed to be used for random choises. When generating multiple videos with the same seed and same transition setting, the transitions are guaranteed to be the same random sequence", required=False, default=None, type=str)
+    parser.add_argument("--transitions", "-T", help="The allowed transitions between graphic clips. Can be either a comma-seperated list of names or a bitmask. Refer to documentation for name and index information", required=False, default=all_transitions(), type=transition_list_type)
     
     return parser.parse_args()

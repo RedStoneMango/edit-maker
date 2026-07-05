@@ -3,48 +3,36 @@ from .utils import zoom_translation
 from moviepy import VideoClip, CompositeVideoClip, vfx
 import random
 
-transitions = [
-    {
-        "name": "jump",
-        "factory": lambda prev_outro, this_intro: jump(prev_outro, this_intro)
-    },
-    {
-        "name": "black-fade",
-        "factory": lambda prev_outro, this_intro: black_fade(prev_outro, this_intro)
-    },
-    {
-        "name": "zoom-out",
-        "factory": lambda prev_outro, this_intro: zoom_out(prev_outro, this_intro)
-    },
-    {
-        "name": "zoom-out-fade",
-        "factory": lambda prev_outro, this_intro: zoom_out_fade(prev_outro, this_intro)
-    },
-    {
-        "name": "zoom-in",
-        "factory": lambda prev_outro, this_intro: zoom_in(prev_outro, this_intro)
-    },
-    {
-        "name": "zoom-in-fade",
-        "factory": lambda prev_outro, this_intro: zoom_in_fade(prev_outro, this_intro)
-    },
-    {
-        "name": "cross-fade",
-        "factory": lambda prev_outro, this_intro: cross_fade(prev_outro, this_intro)
-    },
-    {
-        "name": "slide-out",
-        "factory": lambda prev_outro, this_intro: slide_out(prev_outro, this_intro)
-    },
-    {
-        "name": "slide-in",
-        "factory": lambda prev_outro, this_intro: slide_in(prev_outro, this_intro)
-    },
-    {
-        "name": "walk",
-        "factory": lambda prev_outro, this_intro: walk(prev_outro, this_intro)
-    }
-]
+def get_transitions_from_keys(keys:list[str] | None, error_callback):
+    res = []
+    for key in keys:
+        if key not in transitions:
+            error_callback("Invalid transition '%s'" % key)
+            return None
+
+        res.append(transitions.get(key))
+    
+    if len(res) == 0:
+        error_callback("At least one transition must be specified")
+
+    return res
+
+def get_transitions_from_bitmask(bitmask: int, error_callback):
+    res = []
+    options = list(transitions.values())
+
+    for i in range(0, len(options)):
+        if bitmask & (1 << i) != 0:
+            res.append(options[i])
+
+    if len(res) == 0:
+        error_callback("At least one transition must be specified")
+        return None
+
+    return res
+
+def all_transitions():
+    return list(transitions.values())
 
 def jump(prev_outro:VideoClip, this_intro:VideoClip):
     return [prev_outro, this_intro]
@@ -163,3 +151,17 @@ def opposite_side(side):
         case "bottom": return "top"
         case "right": return "left"
         case _: raise ValueError("Side has to be one of ['top', 'left', 'bottom', 'right']")
+
+
+transitions = {
+    "jump": jump,
+    "black-fade": black_fade,
+    "cross-fade": cross_fade,
+    "zoom-out": zoom_out,
+    "zoom-out-fade": zoom_out_fade,
+    "zoom-in": zoom_in,
+    "zoom-in-fade": zoom_in_fade,
+    "slide-out": slide_out,
+    "slide-in": slide_in,
+    "walk": walk,
+}
