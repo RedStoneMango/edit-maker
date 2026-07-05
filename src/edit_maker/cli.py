@@ -92,6 +92,6 @@ def parse_args():
     parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="[DARKEN|off]")
     parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="[VIGNETTE|off]")
     parser.add_argument("--transitions", "-t", help="The allowed transitions between graphic clips. Can be either a comma-separated list of names or a bitmask. Refer to documentation for name and index information", required=False, default=all_transitions(), type=transition_list_type)
-    parser.add_argument("--seed", "", help="The seed to be used for random choices. When generating multiple videos with the same seed and same transition setting, the transitions are guaranteed to be the same random sequence. Can be any text", required=False, default=None, type=str)
+    parser.add_argument("--seed", help="The seed to be used for random choices. When generating multiple videos with the same seed and same transition setting, the transitions are guaranteed to be the same random sequence. Can be any text", required=False, default=None, type=str)
     
     return parser.parse_args()
