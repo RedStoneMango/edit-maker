@@ -48,6 +48,6 @@ def parse_args():
     parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
     parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
     parser.add_argument("--no-background-blur", "-B", help="Disables background blur for graphics whose size does not match the canvas size. Instead the outer part of the graphic will be black", action="store_true")
-    parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed", required=False, default=2, type=positive_int_type)
+    parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed", required=False, default=1, type=positive_int_type)
     
     return parser.parse_args()
