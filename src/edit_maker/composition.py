@@ -1,10 +1,10 @@
 from .graphics import instantiate_clip
 from .dataholders import RenderOptions
 from .utils import contain_scale, cover_scale
-from .effects import Blur
+from .effects import Blur, vignette_clip
 from .dataholders import AudioData
 
-from moviepy import CompositeVideoClip
+from moviepy import CompositeVideoClip, ColorClip
 from proglog import default_bar_logger
 
 def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptions):
@@ -66,7 +66,12 @@ def prepare_clip(graphic, duration, size, render_options:RenderOptions):
     clip = clip.resized(scale)
 
     if render_options.blur:
-        return blur_background(clip, size)
+        clip = blur_background(clip, size)
+    else:
+        clip = black_background(clip, size)
+
+    clip = vignette_clip(clip)
+    
     return clip
 
 
@@ -84,4 +89,11 @@ def blur_background(clip, canvas_size):
         .with_effects([Blur(intensity=200)]) \
         .with_position("center")
 
+    return CompositeVideoClip([bg, clip.with_position("center")], size=canvas_size)
+
+def black_background(clip, canvas_size):
+    if clip.size == canvas_size:
+        return clip
+
+    bg = ColorClip(size=canvas_size, duration=clip.duration).with_position("center")
     return CompositeVideoClip([bg, clip.with_position("center")], size=canvas_size)
