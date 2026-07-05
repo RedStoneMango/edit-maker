@@ -70,5 +70,6 @@ def parse_args():
     parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed. Default 1", required=False, default=1, type=positive_int_type)
     parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="[DARKEN|off]")
     parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="[VIGNETTE|off]")
+    parser.add_argument("--seed", "-S", help="The seed to be used for random choises. When generating multiple videos with the same seed and same transition setting, the transitions are guaranteed to be the same random sequence", required=False, default=None, type=str)
     
     return parser.parse_args()

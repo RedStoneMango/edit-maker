@@ -5,6 +5,8 @@ from .renderer import render
 from .dataholders import RenderOptions
 from .transition import apply_transitions
 
+import random
+
 
 def main():
     args = parse_args()
@@ -14,6 +16,8 @@ def main():
         vignette=args.vignette,
         darken=args.darken
     )
+
+    random.seed(args.seed) # Seed the global random
 
     size = args.size or find_auto_size(args.graphics)
 
