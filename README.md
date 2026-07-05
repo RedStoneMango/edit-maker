@@ -27,6 +27,34 @@ The above creates an edit as *my-edit.mp4* using the music *audio.mp3* and featu
 
 ---
 
+## How it Works
+
+The base script operates in 5 main steps:
+
+1. **Analyze audio beats**
+
+    By analyzing the provided audio file, the script figures out the timestamps of the audio's beats
+
+2. **Generate beat-syncronized graphic clips**
+
+    The graphics are selected and prepared for editing. This includes adjusting the graphics to a length that matches the audio's beats and applying filters like vignette
+
+3. **Apply clip transitions**
+
+    Adjacent clips are concatenated using a randomly selected transition from the [pool of available transitions](#transition-arg)
+
+4. **Export audio**
+
+    The audio is exported for later use with the final edit
+
+5. **Render video**
+    
+    The video is rendered based on the generated clips, the audio is added and the result is stored
+
+Depending on the exact configuration, additional steps might be added to the process.
+
+---
+
 ## Optional Arguments
 
 The script accepts a set of optional arguments to customize your edits even further:
@@ -72,7 +100,7 @@ The following transitions are supported:
 
 Let's assume we wanted to express the combination `black-fade,cross-fade` in its shorter bitmask form. To do so, we look at the bitmask values of these transitions _($`2`$ and $`4`$)_ and add them up:
 $$ 2 + 4 = 6 $$
-To **edit-maker**, "$`6`$" and `black-fade,cross-fade` are the same selections.
+To **edit-maker**, "$`6`$" and `black-fade,cross-fade` mean the same thing.
 
 Similarily, this means that selecting all transitions but `jump` can be expressed as `black-fade,cross-fade,zoom-out,zoom-out-fade,zoom-in,zoom-in-fade,slide-out,slide-in,walk` and "$`1022`$" since
 $$ 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 = 1022 $$
