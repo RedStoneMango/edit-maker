@@ -57,8 +57,7 @@ The following transitions are supported:
 | ---- | ----------- | ------------- |
 | jump | A classic cut between two clips, jumping from one to the other once it is finished. | $`2^0 = 1`$ |
 | black-fade | The previous clip becomes darker over time until it is completely black. The next clip starts of completely dark and lights up to normal brightness. | $`2^1 = 2`$ |
-| cross-fade | The previous clip becomes more transparent over time until it vanishes completely. Simultaneously, the other clip becomes visible below the first 
-one and get progressively less transparent, replacing the first clip. | $`2^2 = 4`$ |
+| cross-fade | The previous clip becomes more transparent over time until it vanishes completely. Simultaneously, the other clip becomes visible below the first one and get progressively less transparent, replacing the first clip. | $`2^2 = 4`$ |
 | zoom-out | The previous clip becomes smaller over time until it reaches half its original size. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions, creating the illusion of a camera zooming out and in. | $`2^3 = 8`$ |
 | zoom-out-fade | The previous clip becomes smaller over time until it reaches half its original size. At the same time it darkens until it's completely black. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions while also fading in from a previously completely black clip. | $`2^4 = 16`$ |
 | zoom-in | The previous clip becomes bigger over time until it reaches 150% of its original size. The next clip starts of at 150% size and becomes smaller until it reaches normal dimensions, creating the illusion of a camera zooming in and out | $`2^5 = 32`$ |
