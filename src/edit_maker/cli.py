@@ -3,13 +3,20 @@ import os
 
 def size_type(strings):    
     strings = strings.replace("(", "").replace(")", "")
+    if "," not in strings and "x" not in strings and "×" not in strings:
+        raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or WIDTHxHEIGHT")
+
     try:
         tuple_int = tuple(map(int, strings.split("x")))
     except:
         try:
-            tuple_int = tuple(map(int, strings.split(",")))
+            tuple_int = tuple(map(int, strings.split("×")))
         except:
-            raise argparse.ArgumentTypeError("Values should be positive integers")
+            try:
+                tuple_int = tuple(map(int, strings.split(",")))
+            except:
+                raise argparse.ArgumentTypeError("Values should be positive integers")
+        
     if len(tuple_int) != 2:
         raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or WIDTHxHEIGHT")
     if tuple_int[0] <= 0 or tuple_int[1] <= 0:
@@ -49,5 +56,6 @@ def parse_args():
     parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
     parser.add_argument("--background-blur", "-B", help="Enables background blur for graphics whose size does not match the canvas size. Instead of a black area the outer part of the graphic will be a blurred version of the graphic itself", action="store_true")
     parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed", required=False, default=1, type=positive_int_type)
+    parser.add_argument("--darken", "-d", help="The intensity of the clip darkening", required=False, default=1, type=positive_int_type)
     
     return parser.parse_args()
