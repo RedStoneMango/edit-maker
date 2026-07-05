@@ -9,3 +9,6 @@ def ease_out(x):
 
 def zoom_translation(start_scale, end_scale, duration):
     return lambda t: start_scale + (end_scale - start_scale) * ease_out(min(t / max(duration, 0.001), 1.0))
+
+def raise_(ex):
+    raise ex
