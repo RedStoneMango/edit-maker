@@ -20,13 +20,18 @@ class Blur(Effect):
         return clip.transform(filter)
 
 # ChatGPT math
-def darken_clip(clip:VideoClip, intensity: float = 0.2):
-    def darken_filter(get_frame, t):
-        frame = get_frame(t)
-        f = frame.astype(float)
+def darken_clip(clip: VideoClip, intensity: float):
+    intensity = np.clip(intensity, 0.0, 1.0)
 
-        # Multiply overall brightness and square the pixels to deep-fry the shadows
-        processed = (f * intensity) * (f / 255.0)
+    def darken_filter(get_frame, t):
+        frame = get_frame(t).astype(np.float32)
+
+        # Fully darkened version
+        darkened = frame * (frame / 255.0)
+
+        # Linearly interpolate
+        processed = frame + intensity * (darkened - frame)
+
         return np.clip(processed, 0, 255).astype(np.uint8)
 
     return clip.transform(darken_filter)
