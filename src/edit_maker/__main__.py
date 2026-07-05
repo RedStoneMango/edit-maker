@@ -9,7 +9,7 @@ from .transition import apply_transitions
 def main():
     args = parse_args()
     render_options = RenderOptions(
-        blur=not args.no_background_blur,
+        blur=args.background_blur,
         graphic_beats=args.graphic_beats
     )
 
