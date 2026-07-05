@@ -64,7 +64,10 @@ def prepare_clip(graphic, duration, size, render_options:RenderOptions):
     )
     clip = clip.resized(scale)
 
-    clip = vignette_clip(clip)
+    if render_options.darken is not None:
+        clip = darken_clip(clip, render_options.darken)
+    if render_options.vignette is not None:
+        clip = vignette_clip(clip, render_options.vignette)
 
     if render_options.blur:
         clip = blur_background(clip, size)

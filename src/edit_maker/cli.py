@@ -67,7 +67,8 @@ def parse_args():
     parser.add_argument("--beat-tightness", "-t", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
     parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="[WIDTH,HEIGHT|WIDTHxHEIGHT]")
     parser.add_argument("--background-blur", "-B", help="Enables background blur for graphics whose size does not match the canvas size. Instead of a black area the outer part of the graphic will be a blurred version of the graphic itself", action="store_true")
-    parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed", required=False, default=1, type=positive_int_type)
-    parser.add_argument("--darken", "-d", help="The intensity of the clip darkening", required=False, default=1, type=positive_int_type)
+    parser.add_argument("--graphic-beats", "-b", help="The amount of beats a graphic should be displayed. Default 1", required=False, default=1, type=positive_int_type)
+    parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="[DARKEN|off]")
+    parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="[VIGNETTE|off]")
     
     return parser.parse_args()

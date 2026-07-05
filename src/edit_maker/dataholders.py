@@ -7,6 +7,8 @@ from moviepy import AudioFileClip
 class RenderOptions:
     blur: bool
     graphic_beats: int
+    vignette: float | None
+    darken: float | None
 
 @dataclass
 class AudioData:

@@ -10,7 +10,9 @@ def main():
     args = parse_args()
     render_options = RenderOptions(
         blur=args.background_blur,
-        graphic_beats=args.graphic_beats
+        graphic_beats=args.graphic_beats,
+        vignette=args.vignette,
+        darken=args.darken
     )
 
     size = args.size or find_auto_size(args.graphics)

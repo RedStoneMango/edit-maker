@@ -51,4 +51,3 @@ def vignette_clip(clip:VideoClip, base_brightness: float = 0.6):
         return np.clip(f, 0, 255).astype(np.uint8)
 
     return clip.transform(vignette_filter)
-
