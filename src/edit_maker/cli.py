@@ -46,6 +46,18 @@ def positive_int_type(string):
         raise argparse.ArgumentTypeError("Should be greater than 0")
     return i
 
+def deactivatable_positive_float_type(string):
+    if string.lower().strip() == "off":
+        return None
+
+    try:
+        f = float(string)
+    except:
+        raise argparse.ArgumentTypeError("Should be a (decimal) number or 'off'")
+    if f < 0:
+        raise argparse.ArgumentTypeError("Should be greater or equal to 0")
+    return f
+
 def parse_args():
     parser = argparse.ArgumentParser("edit-maker", description="Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed.")
 
