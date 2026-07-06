@@ -68,39 +68,60 @@ The script accepts a set of optional arguments to customize your edits even furt
 | --graphic-beats | -b | The amount of audio beats a graphic should be displayed. Higher values mean that individual graphics are visible for a longer time. Default: 1 | POSITIVE_NUMBER_NOT_0 |
 | --darken | -d | The intensity of the darkening effect to be applied to every clip or 'off' to deactivate darkening. 0 means normal, 1 means all black. Default: off | POSITIVE_NUMBER or 'off' |
 | --vignette | -V | The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8 | POSITIVE_NUMBER or 'off' |
-| <a id="transition-arg"></a> --transitions | -t | A list allowed transitions between graphic clips. Can be either a comma-separated list of names or a bitmask. Refer to the [transition documentation](#transitions) for name and index information | NAME,NAME,NAME... or INTEGER |
+| <a id="transition-arg"></a> --transitions | -t | A list allowed transitions between graphic clips. Can be either a comma-separated list of names with optional weight or a transition abbreviation. Refer to the [transition CLI documentation](#cli-examples) for further information | NAME,NAME,NAME... or INTEGER |
 | --seed |  | The seed to be used for random choices. When generating multiple videos with the same seed, the choices are guaranteed to be the same random sequence as long as no other parameters interfer with the sample space. Can be any text | TEXT |
 
 ---
 
 ## Transitions
 
-The script supports various randomly chosen transitions to be rendered between graphic clips. The sample space can be limited using the [optional `--transitions` argument](#transition-arg).
-
-The transition argument takes either a comma-separated list of transition names or a bitmask. A bitmask is a way to represent a combination as a compact number. Essentially, it is computed by adding up all the bitmask values of the chosen elements.
+The script supports various randomly chosen transitions to be rendered between graphic clips. The sample space can be limited using the [optional `--transitions` argument](#transition-arg). The transition argument takes either a comma-separated list of transition names with an optional weight or a transition abbreviation.
 
 The following transitions are supported:
 
-| Name | Description | Bitmask Value |
-| ---- | ----------- | ------------- |
-| jump | A classic cut between two clips, jumping from one to the other once it is finished. | $`2^0 = 1`$ |
-| black-fade | The previous clip becomes darker over time until it is completely black. The next clip starts of completely dark and lights up to normal brightness. | $`2^1 = 2`$ |
-| cross-fade | The previous clip becomes more transparent over time until it vanishes completely. Simultaneously, the other clip becomes visible below the first one and get progressively less transparent, replacing the first clip. | $`2^2 = 4`$ |
-| zoom-out | The previous clip becomes smaller over time until it reaches half its original size. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions, creating the illusion of a camera zooming out and in. | $`2^3 = 8`$ |
-| zoom-out-fade | The previous clip becomes smaller over time until it reaches half its original size. At the same time it darkens until it's completely black. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions while also fading in from a previously completely black clip. | $`2^4 = 16`$ |
-| zoom-in | The previous clip becomes bigger over time until it reaches 150% of its original size. The next clip starts of at 150% size and becomes smaller until it reaches normal dimensions, creating the illusion of a camera zooming in and out | $`2^5 = 32`$ |
-| zoom-in-fade | The previous clip becomes bigger over time until it reaches 150% of its original size. At the same time it darkens until it's completely black. The next clip starts of at 150% size and becomes bigger until it reaches normal dimensions while also fading in from a previously completely black clip. | $`2^6 = 64`$ |
-| slide-out | The previous clip slides to the side, revealing the next clip lying under it. The direction to slide out _(up, down, left, right)_ is randomly chosen | $`2^7 = 128`$ |
-| slide-in | The next clip slides in from the side, covering the previous clip below it. The direction to slide in from _(up, down, left, right)_ is randomly chosen | $`2^8 = 256`$ |
-| walk | The current clip slides out in one direction while the next one is sliding in from the opposite one, creating the illusion of both clips existing next to one another with the camera moving from focusing the first to the second.  The direction to walk in _(up, down, left, right)_ is randomly chosen | $`2^9 = 512`$ |
+| Name | Description | Abbreviation Position |
+| ---- | ----------- | --------------------- |
+| jump | A classic cut between two clips, jumping from one to the other once it is finished. | $`1st`$ |
+| black-fade | The previous clip becomes darker over time until it is completely black. The next clip starts of completely dark and lights up to normal brightness. | $`2nd`$ |
+| cross-fade | The previous clip becomes more transparent over time until it vanishes completely. Simultaneously, the other clip becomes visible below the first one and get progressively less transparent, replacing the first clip. | $`3rd`$ |
+| zoom-out | The previous clip becomes smaller over time until it reaches half its original size. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions, creating the illusion of a camera zooming out and in. | $`4th`$ |
+| zoom-out-fade | The previous clip becomes smaller over time until it reaches half its original size. At the same time it darkens until it's completely black. The next clip starts of at half the size and becomes bigger until it reaches normal dimensions while also fading in from a previously completely black clip. | $`5th`$ |
+| zoom-in | The previous clip becomes bigger over time until it reaches 150% of its original size. The next clip starts of at 150% size and becomes smaller until it reaches normal dimensions, creating the illusion of a camera zooming in and out | $`6th`$ |
+| zoom-in-fade | The previous clip becomes bigger over time until it reaches 150% of its original size. At the same time it darkens until it's completely black. The next clip starts of at 150% size and becomes bigger until it reaches normal dimensions while also fading in from a previously completely black clip. | $`7th`$ |
+| slide-out | The previous clip slides to the side, revealing the next clip lying under it. The direction to slide out _(up, down, left, right)_ is randomly chosen | $`8th`$ |
+| slide-in | The next clip slides in from the side, covering the previous clip below it. The direction to slide in from _(up, down, left, right)_ is randomly chosen | $`9th`$ |
+| walk | The current clip slides out in one direction while the next one is sliding in from the opposite one, creating the illusion of both clips existing next to one another with the camera moving from focusing the first to the second.  The direction to walk in _(up, down, left, right)_ is randomly chosen | $`10th`$ |
 
 ---
 
-### Bitmask example
+### CLI Examples
 
-Let's assume we wanted to express the combination `black-fade,cross-fade` in its shorter bitmask form. To do so, we look at the bitmask values of these transitions _($`2`$ and $`4`$)_ and add them up:
-$$ 2 + 4 = 6 $$
-To **edit-maker**, "$`6`$" and `black-fade,cross-fade` mean the same thing.
+#### Normal Form
 
-Similarily, this means that selecting all transitions but `jump` can be expressed as `black-fade,cross-fade,zoom-out,zoom-out-fade,zoom-in,zoom-in-fade,slide-out,slide-in,walk` and "$`1022`$" since
-$$ 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 = 1022 $$
+Let's assume we wanted to express the combination of the transitions `black-fade` and `cross-fade` which can be found in the table above. To do so, we simply combine both names to a comma-separated list:
+```
+black-fade,cross-fade
+```
+
+If we now want the randomizer to prefer the black-fade transition over cross-fade, we can add a weight. This weight is a single-digit number ($`0-9`$) that is prepended to the name using a `:`. If no weight is given, a value of $`1`$ is assumed.
+```
+2:black-fade,cross-fade
+```
+This means, if the randomizer makes 3 choices, on average the black-fade is chosen twice and the cross-fade just one.
+
+To compact the list, we can also omit the `:`:
+```
+2black-fade,cross-fade
+```
+
+#### Abbreviated
+
+Instead of writing down the entire list, we can also abbreviate the normal form by just writing down the weights for each transition. Those weight digits are concatenated to a single line where the transition the digit belongs to is denoted by the digit's position from left to right. The mapping can be found in the [transition table](#transitions). To the right of the abbreviation, every leftover position is implicitely set to $`0`$
+
+This example
+$$ 1111 $$
+means that the first four transitions _(`jump`,`black-fade`,`cross-fade`,`zoom-out`)_ should be active with a weight of $`1`$. Because the entire right of the abbreviation is implicitely $`0`$, the expanded version looks like $`1111(0000000...)`$ - All other transitions have weight of $`0`$ and are therefore turned off.
+
+Likewise,
+$$ 0200104 $$
+represents a combination where `black-fade` has a weigth of $`2`$, `zoom-out-fade` has a weight of $`1`$ and `zoom-in-fade` a weight of $`4`$. All other transitions are not active.

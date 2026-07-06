@@ -2,27 +2,43 @@ from .utils import zoom_translation
 
 from moviepy import VideoClip, CompositeVideoClip, vfx
 import random
+import re
 
-def get_transitions_from_keys(keys:list[str] | None, error_callback):
+literal_entry_pattern = re.compile("^(\\d)?:?([a-z-]+)$")
+
+def get_transitions_from_literal(entries:list[str] | None, error_callback):
     res = []
-    for key in keys:
+    for entry in entries:
+        match = literal_entry_pattern.match(entry)
+        if not match:
+            error_callback("Invalid transition pattern '%s'. Should be 'NAME,' "
+            "or 'WEIGTH:NAME,' or a chain of %s digits" % (entry, len(transitions)))
+            return None
+        
+        weight = match.group(1)
+        weight = int(weight) if weight else 1
+        key = match.group(2)
         if key not in transitions:
-            error_callback("Invalid transition '%s'" % key)
+            error_callback("Invalid transition name '%s'" % key)
             return None
 
-        res.append(transitions.get(key))
-    
+        for _ in range(0, weight): # If higher weight, add more entries
+            res.append(transitions.get(key))
+
     if len(res) == 0:
         error_callback("At least one transition must be specified")
 
     return res
 
-def get_transitions_from_bitmask(bitmask: int, error_callback):
+def get_transitions_from_abbr(abbr: str, error_callback):
     res = []
     options = list(transitions.values())
+    options_len = len(options)
+    abbr_len = len(abbr)
 
-    for i in range(0, len(options)):
-        if bitmask & (1 << i) != 0:
+    for i in range(0, options_len):
+        weight = int(abbr[i]) if abbr_len > i else 0 # Bounds check to ensure forwards compatibility
+        for _ in range(0, weight): # If higher weight, add more entries
             res.append(options[i])
 
     if len(res) == 0:
@@ -31,7 +47,7 @@ def get_transitions_from_bitmask(bitmask: int, error_callback):
 
     return res
 
-def all_transitions():
+def default_transitions():
     return list(transitions.values())
 
 def jump(prev_outro:VideoClip, this_intro:VideoClip):
