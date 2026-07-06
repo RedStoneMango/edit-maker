@@ -109,7 +109,7 @@ If we now want the randomizer to prefer the black-fade transition over cross-fad
 ```
 This means, if the randomizer makes 3 choices, on average the black-fade is chosen twice and the cross-fade just one.
 
-To compact the list, we can also omit the `:`:
+To compact the list, we can also omit the `:`
 ```
 2black-fade,cross-fade
 ```
@@ -119,9 +119,13 @@ To compact the list, we can also omit the `:`:
 Instead of writing down the entire list, we can also abbreviate the normal form by just writing down the weights for each transition. Those weight digits are concatenated to a single line where the transition the digit belongs to is denoted by the digit's position from left to right. The mapping can be found in the [transition table](#transitions). To the right of the abbreviation, every leftover position is implicitely set to $`0`$
 
 This example
+
 $$ 1111 $$
+
 means that the first four transitions _(`jump`,`black-fade`,`cross-fade`,`zoom-out`)_ should be active with a weight of $`1`$. Because the entire right of the abbreviation is implicitely $`0`$, the expanded version looks like $`1111(0000000...)`$ - All other transitions have weight of $`0`$ and are therefore turned off.
 
 Likewise,
+
 $$ 0200104 $$
+
 represents a combination where `black-fade` has a weigth of $`2`$, `zoom-out-fade` has a weight of $`1`$ and `zoom-in-fade` a weight of $`4`$. All other transitions are not active.
