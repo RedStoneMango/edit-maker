@@ -10,41 +10,18 @@ from proglog import default_bar_logger
 def build_clips(audio_data:AudioData, graphics, size, render_options:RenderOptions):
     logger = default_bar_logger("bar")
     logger(message="[2/5]  Generating beat-syncronized graphic clips")
-    logger.iter_bar(beats=range(len(audio_data.beats) + 1)) # Abuse proglog to create bar of length len(audio_data.beats)+1
 
     clips = []
     current_graphic = 0
-    previous = 0
-    beat_count = 1
-    logger_idx = 0
 
-    for beat in audio_data.beats:
-        if beat_count < render_options.graphic_beats:
-            beat_count += 1
-            continue
-        beat_count = 1
-
+    for clip_duration in logger.iter_bar(entry=audio_data.clip_durations):
         clips.append(prepare_clip(
             graphics[current_graphic],
-            beat - previous,
+            clip_duration,
             size,
             render_options
         ))
         current_graphic = (current_graphic + 1) % len(graphics)
-        previous = beat
-
-        # Manually update progress bar
-        logger.bars_callback("beats", "index", logger_idx + 1, logger_idx)
-        logger_idx += 1
-
-    # Tail after the last beat
-    logger.bars_callback("beats", "index", logger_idx + 1, logger_idx) # Last progress update
-    clips.append(prepare_clip(
-            graphics[current_graphic],
-            audio_data.duration - previous,
-            size,
-            render_options
-    ))
 
     return clips
 

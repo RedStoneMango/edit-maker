@@ -10,9 +10,11 @@ import random
 
 def main():
     args = parse_args()
+
+    print("Preparing...", end="") # Just in case a pre-loading action takes too long
+
     render_options = RenderOptions(
         blur=args.background_blur,
-        graphic_beats=args.graphic_beats,
         vignette=args.vignette,
         darken=args.darken
     )
@@ -21,7 +23,9 @@ def main():
 
     size = args.size or find_auto_size(args.graphics)
 
-    audio = analyze_audio(args.audio, args.beat_tightness)
+    print("\r", end="") # We are ready to start!
+
+    audio = analyze_audio(args.audio, args.beat_tightness, args.clips_per_beat)
 
     clips = build_clips(
         audio,

@@ -6,12 +6,11 @@ from moviepy import AudioFileClip
 @dataclass
 class RenderOptions:
     blur: bool
-    graphic_beats: int
     vignette: float | None
     darken: float | None
 
 @dataclass
 class AudioData:
-    beats: np.ndarray
+    clip_durations: list[float]
     duration: float
     clip: AudioFileClip
