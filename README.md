@@ -37,7 +37,7 @@ The base script operates in 5 main steps:
 
 2. **Generate beat-syncronized graphic clips**
 
-    The graphics are selected and prepared for editing. This includes adjusting the graphics to a length that matches the audio's beats and applying filters like vignette
+    The graphics are shuffled and prepared for editing. This includes adjusting the graphics to a length that matches the audio's beats and applying filters like vignette
 
 3. **Apply clip transitions**
 
@@ -129,3 +129,11 @@ Likewise,
 $$ 0200104 $$
 
 represents a combination where `black-fade` has a weigth of $`2`$, `zoom-out-fade` has a weight of $`1`$ and `zoom-in-fade` a weight of $`4`$. All other transitions are not active.
+
+---
+
+## Limitations
+
+No amount of plain automation can replace manually well-made edits and no small side-project will be able to compete with the complex CapCut filters. However, this tool provides a [basic set of transitions](#transitions) for most purposes.
+
+Edit-Maker is a project made for people who want to implement an edit idea by simply automating its generation, not for professional editors.
