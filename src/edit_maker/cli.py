@@ -4,6 +4,7 @@ from .utils import raise_
 import argparse
 import os
 import re
+from moviepy.tools import convert_to_seconds
 
 def size_type(strings):    
     if "," not in strings and "x" not in strings and "×" not in strings:
@@ -85,6 +86,13 @@ def transition_list_type(arg):
         lambda error: raise_(argparse.ArgumentTypeError(error))
     )
 
+def timestamp_type(arg):
+    try:
+        secs = convert_to_seconds(arg) # Fork out to moviepy utility
+    except ValueError as e:
+        raise argparse.ArgumentTypeError("Invalid timestamp format")
+    return secs
+
 
 def parse_args():
     parser = argparse.ArgumentParser("edit-maker", description="Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed.")
@@ -99,6 +107,8 @@ def parse_args():
     parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="[DARKEN|off]")
     parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="[VIGNETTE|off]")
     parser.add_argument("--transitions", "-t", help="The allowed transitions between graphic clips. Can be either a comma-separated list of names with optional weighting or a transition abbreviation. Refer to the documentation for further information", required=False, default=default_transitions(), type=transition_list_type)
+    parser.add_argument("--intro", "-i", help="An optinal graphic file that is prepended to the edit but does get transitions applied. Useful for edits with an introduction clip before the edit itself starts", required=False, default=None, type=file_type)
+    parser.add_argument("--intro-audio", help="Makes the edit audio play in the background while the intro is shown. The intro is sped up / down in such a way that its end (the edit's start) directly aligns with the provided audio timestamp", required=False, default=None, type=timestamp_type)
     parser.add_argument("--seed", help="The seed to be used for random choices. When generating multiple videos with the same seed and same transition setting, the transitions are guaranteed to be the same random sequence. Can be any text", required=False, default=None, type=str)
     
     return parser.parse_args()
