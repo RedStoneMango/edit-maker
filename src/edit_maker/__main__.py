@@ -4,6 +4,7 @@ from .composition import build_clips, find_auto_size
 from .renderer import render
 from .dataholders import RenderOptions
 from .transition import apply_transitions
+from .graphics import shuffle_for_length
 
 import random
 
@@ -11,7 +12,7 @@ import random
 def main():
     args = parse_args()
 
-    print("Preparing...", end="") # Just in case a pre-loading action takes too long
+    print("Preparing...", end="") # Just in case find_auto_size takes too long
 
     render_options = RenderOptions(
         blur=args.background_blur,
@@ -27,9 +28,11 @@ def main():
 
     audio = analyze_audio(args.audio, args.beat_tightness, args.clips_per_beat)
 
+    shuffled_clips = shuffle_for_length(args.graphics, len(audio.clip_durations))
+
     clips = build_clips(
         audio,
-        args.graphics,
+        shuffled_clips,
         size,
         render_options
     )
