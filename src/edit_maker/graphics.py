@@ -28,7 +28,7 @@ def instantiate_clip(graphic, duration=None):
     else:
         clip = ImageClip(
             graphic,
-            duration=duration
+            duration=duration or 5 # Fallback for intro or outro w/o specified length
         )
 
     return clip

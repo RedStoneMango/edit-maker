@@ -5,7 +5,7 @@ from moviepy import AudioFileClip
 from proglog import default_bar_logger
 import numpy as np
 
-def analyze_audio(audio_path, tightness, clips_per_beat):
+def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset):
     logger = default_bar_logger("bar")
     logger(message="[1/5]  Analyzing audio beats")
     logger.iter_bar(progress=range(5))
@@ -20,10 +20,10 @@ def analyze_audio(audio_path, tightness, clips_per_beat):
     audio = AudioFileClip(audio_path)
     logger.bars_callback("progress", "index", 5, 4)
 
-    clip_durations = figure_out_durations(clips_per_beat, beats, audio.duration)
+    clip_durations = figure_out_durations(clips_per_beat, beats, audio.duration, clips_start_offset)
     return AudioData(clip_durations=clip_durations, duration=audio.duration, clip=audio)
 
-def figure_out_durations(clips_per_beat, beats, duration):
+def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
     # Beat boundaries (0 -> beat1 -> beat2 -> ... -> end)
     beat_times = np.concatenate(([0.0], beats, [duration]))
     num_intervals = len(beat_times) - 1
