@@ -9,7 +9,9 @@ def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | Non
     res = []
     effective_intro_duration = 0
     if intro:
-        pass
+        intro_clip = instantiate_clip(intro.graphic, intro.duration)
+        effective_intro_duration = intro_clip.duration
+        res.append(intro_clip)
 
     base_edit_data = generate_base_edit(base_edit, general.audio, effective_intro_duration)
     res.extend(base_edit_data.clips)

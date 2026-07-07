@@ -30,23 +30,28 @@ def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
 
     total_clips = max(1, round(num_intervals * clips_per_beat))
 
-    durations = []
-    previous = 0.0
-
+    # Compute the normal clip boundary times.
+    boundaries = []
     for i in range(total_clips):
-        # Position of this clip on the beat axis
         beat_pos = i * num_intervals / total_clips
 
         interval = int(beat_pos)
         frac = beat_pos - interval
 
-        # Interpolate within that beat interval
         start = beat_times[interval]
         end = beat_times[interval + 1]
-        t = start + frac * (end - start)
+        boundaries.append(start + frac * (end - start))
 
+    boundaries.append(duration)
+
+    # Keep only boundaries after the offset.
+    boundaries = [t for t in boundaries if t > clips_start_offset]
+
+    durations = []
+    previous = clips_start_offset
+
+    for t in boundaries:
         durations.append(t - previous)
         previous = t
 
-    durations.append(duration - previous)
     return durations
