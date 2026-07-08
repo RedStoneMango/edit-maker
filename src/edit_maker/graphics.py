@@ -1,5 +1,5 @@
 import magic
-from moviepy import VideoFileClip, ImageClip
+from moviepy import VideoFileClip, ImageClip, vfx
 import random
 import math
 
@@ -18,19 +18,33 @@ def is_video(file):
 
 # When needed, directly provide the duration value to improve performance
 #  with ImageClip creation
-def instantiate_clip(graphic, duration=None):
+def instantiate_clip(graphic, duration=None, ensure_fully_playing:bool = False):
     if is_video(graphic):
         clip = VideoFileClip(
             graphic
         )
-        if duration != None:
-            clip = clip.subclipped(0, duration)
+        if duration:
+            clip = video_clip_to_duration(clip, duration, ensure_fully_playing)
     else:
         clip = ImageClip(
             graphic,
             duration=duration or 5 # Fallback for intro or outro w/o specified length
         )
 
+    return clip
+
+def video_clip_to_duration(clip:VideoFileClip, duration, ensure_fully_playing):
+    if ensure_fully_playing:
+        if clip.duration == duration:
+            return clip
+        return clip.with_speed_scaled(final_duration=duration)
+
+    if clip.duration > duration:
+        return clip.subclipped(0, duration)
+    
+    if clip.duration < duration:
+        return clip.with_effects([vfx.Loop(duration=duration)])
+    
     return clip
 
 def shuffle_for_length(clips:list, length):

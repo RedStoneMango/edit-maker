@@ -14,14 +14,13 @@ class BaseEditData:
     graphics: list[str]
     beat_tightness: float
     clips_per_beat: float
-    size: tuple[int, int]
     render_options: RenderOptions
     transitions:list[any] # Functions
 
 @dataclass
 class IntroData:
     graphic: str
-    duration: float | None
+    audio_duration: float | None
 
 @dataclass
 class AudioData:
@@ -33,6 +32,7 @@ class AudioData:
 class GeneralData:
     audio: str
     out: str
+    size: tuple[int, int]
 
 @dataclass
 class BaseEditResult:

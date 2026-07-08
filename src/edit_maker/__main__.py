@@ -17,13 +17,13 @@ def main():
     generate(
         GeneralData(
             audio=args.audio,
-            out=args.output
+            out=args.output,
+            size=size
         ),
         BaseEditData(
             graphics=args.graphics,
             beat_tightness=args.beat_tightness,
             clips_per_beat=args.clips_per_beat,
-            size=size,
             render_options=RenderOptions(
                 blur=args.background_blur,
                 vignette=args.vignette,
@@ -34,7 +34,7 @@ def main():
         intro=(
             IntroData(
                 graphic=args.intro,
-                duration=args.intro_audio
+                audio_duration=args.intro_audio
             )
             if args.intro else None
         )

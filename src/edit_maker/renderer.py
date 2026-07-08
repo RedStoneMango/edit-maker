@@ -1,12 +1,11 @@
-from .dataholders import AudioData
 from .logger import VideoWriteLogger
 
 from moviepy import concatenate_videoclips, VideoClip
 from tqdm import tqdm
 
-def render(clips, audio_data:AudioData, out):
+def render(clips, audio_clip, out):
     video = concatenate_videoclips(clips, method="compose")
-    fvideo:VideoClip = video.with_audio(audio_data.clip)
+    fvideo:VideoClip = video.with_audio(audio_clip)
 
     fvideo.write_videofile(
         out,

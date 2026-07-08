@@ -1,7 +1,7 @@
 from .dataholders import AudioData
 
 import librosa
-from moviepy import AudioFileClip
+from moviepy import AudioClip, AudioFileClip, concatenate_audioclips
 from proglog import default_bar_logger
 import numpy as np
 
@@ -55,3 +55,16 @@ def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
         previous = t
 
     return durations
+
+def pad_audio_beginning(audio, silence_duration):
+    if silence_duration > 0:
+
+        silence_clip = AudioClip(
+            lambda t: np.zeros(audio.nchannels),
+            duration=silence_duration,
+            fps=audio.fps
+        )
+
+        return concatenate_audioclips([silence_clip, audio])
+        
+    return audio

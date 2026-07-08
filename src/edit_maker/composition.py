@@ -32,8 +32,8 @@ def find_auto_size(graphics):
         size = tuple(max(a, b) for a, b in zip(size, inst.size))
     return size
 
-def prepare_clip(graphic, duration, size, render_options:RenderOptions):
-    clip = instantiate_clip(graphic, duration=duration)
+def prepare_clip(graphic, duration, size, render_options:RenderOptions, ensure_fully_playing:bool = False):
+    clip = instantiate_clip(graphic, duration=duration,  ensure_fully_playing=ensure_fully_playing)
 
     scale = contain_scale(
         clip.w, clip.h,
