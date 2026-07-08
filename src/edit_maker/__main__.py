@@ -34,7 +34,8 @@ def main():
         intro=(
             IntroData(
                 graphic=args.intro,
-                audio_duration=args.intro_audio
+                duration=args.intro_duration,
+                play_audio=args.intro_audio_overlap
             )
             if args.intro else None
         )

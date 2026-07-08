@@ -20,7 +20,8 @@ class BaseEditData:
 @dataclass
 class IntroData:
     graphic: str
-    audio_duration: float | None
+    duration: float | None
+    play_audio: bool
 
 @dataclass
 class AudioData:

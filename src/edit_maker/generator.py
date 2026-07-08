@@ -7,24 +7,21 @@ from .dataholders import *
 
 def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | None):
     res = []
-    base_clips_start_offset = 0
+    effective_intro_duration = 0
 
     if intro:
-        intro_clip = prepare_clip(intro.graphic, intro.audio_duration, general.size,
+        intro_clip = prepare_clip(intro.graphic, intro.duration, general.size,
                                   base_edit.render_options, True)
-        base_clips_start_offset = intro_clip.duration
+        effective_intro_duration = intro_clip.duration
         res.append(intro_clip)
 
-    # If we want audio to play, delay base edit clips by that time
-    #  (keeping audio playback for later concat), otherwise don't trim anything
     base_edit_res:BaseEditResult = generate_base_edit(base_edit, general.audio,
-                                                      base_clips_start_offset if intro.audio_duration else 0,
+                                                      effective_intro_duration if intro.play_audio else 0,
                                                       general.size)
     res.extend(base_edit_res.clips)
 
-    # If we have an intro without audio overlap, the video audio should be silent for that time
     padded_audio = pad_audio_beginning(base_edit_res.audio.clip,
-                                       base_clips_start_offset if not intro.audio_duration else 0)
+                                       0 if intro.play_audio else effective_intro_duration)
     render(res, padded_audio, general.out)
     
 
