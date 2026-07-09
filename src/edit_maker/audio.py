@@ -1,7 +1,7 @@
 from .dataholders import AudioData
 
 import librosa
-from moviepy import AudioClip, AudioFileClip, concatenate_audioclips
+from moviepy import AudioClip, AudioFileClip, CompositeAudioClip, concatenate_audioclips
 from proglog import default_bar_logger
 import numpy as np
 
@@ -56,6 +56,31 @@ def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
 
     return durations
 
+def align_audio_for_intro(audio:AudioClip, audio_time_of_end, intro_duration):
+    """
+    Return a mutated `audio` in such a way that if an intro of length `intro_duration` starts playing
+    when the audio begins, the intro's end exactly matches the timestamp `audio_time_of_end` of the
+    (initially provided) audio.
+
+    If `audio_time_of_end` is None, return a mutation in such a way that if an intro intro of length
+    `intro_duration` starts playing when the audio begins, the main audio content only starts at the exact
+    time the intro ends.
+    
+    Return the unmutated audio if `audio_time_of_end >= audio.duration` or `intro_duration >= audio.duration`.
+    """
+    if not audio_time_of_end:
+        return pad_audio_beginning(audio, intro_duration)
+    
+    if audio_time_of_end >= audio.duration or intro_duration >= audio.duration:
+        return audio
+    
+    diff = audio_time_of_end - intro_duration
+    if diff > 0:
+        return audio.subclipped(abs(diff))
+    else:
+        return pad_audio_beginning(audio, abs(diff))
+
+
 def pad_audio_beginning(audio, silence_duration):
     if silence_duration > 0:
 
@@ -68,3 +93,10 @@ def pad_audio_beginning(audio, silence_duration):
         return concatenate_audioclips([silence_clip, audio])
         
     return audio
+
+def add_audio(video_clip, audio_clip):
+    if not video_clip.audio:
+        return video_clip.with_audio(audio_clip)
+    
+    combined_audio = CompositeAudioClip([video_clip.audio, audio_clip])
+    return video_clip.with_audio(combined_audio)

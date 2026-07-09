@@ -1,27 +1,26 @@
 from .transition import apply_transitions
 from .graphics import shuffle_for_length
 from .renderer import render
-from .audio import analyze_audio, pad_audio_beginning
+from .audio import analyze_audio, align_audio_for_intro
 from .composition import build_clips, prepare_clip
 from .dataholders import *
 
 def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | None):
     res = []
     effective_intro_duration = 0
+    missing_audio_due_to_intro = 0
 
     if intro:
         intro_clip = prepare_clip(intro.graphic, intro.duration, general.size,
                                   base_edit.render_options, True)
         effective_intro_duration = intro_clip.duration
+        missing_audio_due_to_intro = intro.audio_time_of_end or effective_intro_duration
         res.append(intro_clip)
 
-    base_edit_res:BaseEditResult = generate_base_edit(base_edit, general.audio,
-                                                      effective_intro_duration if intro.play_audio else 0,
-                                                      general.size)
+    base_edit_res:BaseEditResult = generate_base_edit(base_edit, general.audio, missing_audio_due_to_intro, general.size)
     res.extend(base_edit_res.clips)
 
-    padded_audio = pad_audio_beginning(base_edit_res.audio.clip,
-                                       0 if intro.play_audio else effective_intro_duration)
+    padded_audio = align_audio_for_intro(base_edit_res.audio.clip, intro.audio_time_of_end, effective_intro_duration)
     render(res, padded_audio, general.out)
     
 

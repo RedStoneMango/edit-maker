@@ -69,7 +69,7 @@ The script accepts a set of optional arguments to customize your edits even furt
 | --darken | -d | The intensity of the darkening effect to be applied to every clip or 'off' to deactivate darkening. 0 means normal, 1 means all black. Default: off | POSITIVE_NUMBER or 'off' |
 | --vignette | -V | The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8 | POSITIVE_NUMBER or 'off' |
 | <a id="transition-arg"></a> --transitions | -t | A list allowed transitions between graphic clips. Can be either a comma-separated list of names with optional weight or a transition abbreviation. Refer to the [transition CLI documentation](#cli-examples) for further information | NAME,NAME,NAME... or INTEGER |
-| --seed |  | The seed to be used for random choices. When generating multiple videos with the same seed, the choices are guaranteed to be the same random sequence as long as no other parameters interfer with the sample space. Can be any text | TEXT |
+| --seed |  | The seed to be used for random choices. When generating multiple videos with the same seed, the random choices are guaranteed to be the same random sequence as long as no other parameters interfer with the sample space. Can be any text | TEXT |
 
 ---
 

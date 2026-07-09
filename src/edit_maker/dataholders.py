@@ -22,6 +22,7 @@ class IntroData:
     graphic: str
     duration: float | None
     play_audio: bool
+    audio_time_of_end: float | None
 
 @dataclass
 class AudioData:
