@@ -2,13 +2,36 @@ from .cli import parse_args
 from .composition import find_auto_size
 from .dataholders import *
 from .generator import generate
+from .audio import analyze_audio
+from .ansi_colors import Colors
 
 import random
+from tqdm import tqdm
+import magic
 
 
 def main():
     args = parse_args()
+    if args.action == "generate":
+        invoke_generator(args)
+    elif args.action == "analyze-audio":
+        invoke_audio_analysis(args)
 
+def invoke_audio_analysis(args):
+    file = args.audio_file
+    data = analyze_audio(file, args.beat_tightness, args.clips_per_beat, args.intro_end_time, log=False)
+    mime = magic.from_file(file, mime=True)
+
+    tqdm.write(Colors.UNDERLINE + "File " + Colors.BOLD + file + Colors.END + Colors.UNDERLINE + ":" + Colors.END)
+    tqdm.write("    " + Colors.BOLD + "Edit Clip Count:" + Colors.END + "  " + str(len(data.clip_durations)))
+    tqdm.write("")
+    tqdm.write("    " + Colors.BOLD + "File Type:" + Colors.END + "        " + mime)
+    tqdm.write("")
+    tqdm.write("    " + Colors.BOLD + "Audio Duration:" + Colors.END + "   " + str(data.duration))
+    tqdm.write("    " + Colors.BOLD + "Audio FPS:" + Colors.END + "        " + str(data.clip.fps))
+    tqdm.write("    " + Colors.BOLD + "Audio Channels:" + Colors.END + "   " + str(data.clip.nchannels))
+
+def invoke_generator(args):
     print("Preparing...", end="")
     random.seed(args.seed)
     size = args.size or find_auto_size(args.graphics)

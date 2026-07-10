@@ -12,9 +12,9 @@ def is_valid_audio(file):
     except:
         return False
 
-def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset):
+def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset, log=True):
     logger = default_bar_logger("bar")
-    logger(message="[1/5]  Analyzing audio beats")
+    if log: logger(message="[1/5]  Analyzing audio beats")
     logger.iter_bar(progress=range(5))
 
     logger.bars_callback("progress", "index", 1, 0)
