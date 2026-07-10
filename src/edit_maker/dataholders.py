@@ -23,6 +23,7 @@ class IntroData:
     duration: float | None
     play_audio: bool
     audio_time_of_end: float | None
+    apply_effects: bool
 
 @dataclass
 class AudioData:

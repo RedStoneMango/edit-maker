@@ -59,7 +59,8 @@ def invoke_generator(args):
                 graphic=args.intro,
                 duration=args.intro_duration,
                 play_audio=args.intro_audio_overlap is not None,
-                audio_time_of_end = None if args.intro_audio_overlap == -1 else args.intro_audio_overlap
+                audio_time_of_end = None if args.intro_audio_overlap == -1 else args.intro_audio_overlap,
+                apply_effects=args.apply_intro_effects
             )
             if args.intro else None
         )

@@ -11,8 +11,13 @@ def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | Non
     missing_audio_due_to_intro = 0
 
     if intro:
+        intro_render_options = (
+            base_edit.render_options
+            if intro.apply_effects
+            else RenderOptions(base_edit.render_options.blur, None, None)
+        )
         intro_clip = prepare_clip(intro.graphic, intro.duration, general.size,
-                                  base_edit.render_options, True)
+                                  intro_render_options, True)
         effective_intro_duration = intro_clip.duration
         missing_audio_due_to_intro = intro.audio_time_of_end or effective_intro_duration
         res.append(intro_clip)
