@@ -4,6 +4,13 @@ import librosa
 from moviepy import AudioClip, AudioFileClip, CompositeAudioClip, concatenate_audioclips
 from proglog import default_bar_logger
 import numpy as np
+import magic
+
+def is_valid_audio(file):
+    try:
+        return magic.from_file(file, mime=True).startswith("audio/")
+    except:
+        return False
 
 def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset):
     logger = default_bar_logger("bar")

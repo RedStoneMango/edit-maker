@@ -6,15 +6,27 @@ import math
 is_video_cache = {}
 
 def is_video(file):
+    # Just to be sure, verify element presence in cache
     if not file in is_video_cache:
         try:
             mime_type = magic.from_file(file, mime=True)
             is_video_cache[file] = \
-                mime_type.startswith('video/') or mime_type == "image/gif"
-        except Exception:
+                mime_type.startswith("video/") or mime_type == "image/gif"
+        except:
             is_video_cache[file] = False
     
     return is_video_cache[file]
+
+def is_valid_graphic(file):
+    try:
+        mime = magic.from_file(file, mime=True)
+        # Cache for #is_video
+        is_video_cache[file] = \
+                mime.startswith("video/") or mime == "image/gif"
+        
+        return mime.startswith("video/") or mime.startswith("image/")
+    except:
+        return False
 
 # When needed, directly provide the duration value to improve performance
 #  with ImageClip creation

@@ -1,5 +1,7 @@
 from .transition_registry import get_transitions_from_literal, get_transitions_from_abbr, default_transitions
 from .utils import raise_
+from .graphics import is_valid_graphic
+from .audio import is_valid_audio
 
 import argparse
 import os
@@ -27,9 +29,18 @@ def size_type(strings):
         raise argparse.ArgumentTypeError("Should be greater than 0")
     return tuple_int
 
-def file_type(string):
+def audio_file_type(string):
     if not os.path.isfile(string):
         raise argparse.ArgumentTypeError("File '" + string  + "' does not exist")
+    if not is_valid_audio(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' is not an audio")
+    return string
+
+def graphic_file_type(string):
+    if not os.path.isfile(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' does not exist")
+    if not is_valid_graphic(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' is not an image or video")
     return string
 
 def positive_float_type(string):
@@ -97,9 +108,9 @@ def timestamp_type(arg):
 def parse_args():
     parser = argparse.ArgumentParser("edit-maker", description="Easily generate TikTok edits purely by providing an audio and image files. No video editing skills needed.")
 
-    parser.add_argument("audio", help="The audio file to use for the edit", type=file_type)
+    parser.add_argument("audio", help="The audio file to use for the edit", type=audio_file_type)
     parser.add_argument("output", help="The output file to save the edit in", type=str) # Output is not required to exist, therefore no file_type
-    parser.add_argument("graphics", help="The graphics to be used in the edit", type=file_type, nargs="+")
+    parser.add_argument("graphics", help="The graphics to be used in the edit", type=graphic_file_type, nargs="+")
     parser.add_argument("--beat-tightness", help="The tightness of the detected audio beat distribution around the tempo of the audio file. Must be greater or equal 0 and can have decimal points", type=positive_float_type, default=100, required=False)
     parser.add_argument("--size", "-s", help="The size of the resulting edit in format WIDTH,HEIGHT / WIDTHxHEIGHT. This will scale all graphics to this value while respecting the aspect ratio. Without this option, the size is the max width/height of the provided graphics", type=size_type, default=None, required=False, metavar="WIDTH,HEIGHT|WIDTHxHEIGHT")
     parser.add_argument("--background-blur", "-B", help="Enables background blur for graphics whose size does not match the canvas size. Instead of a black area the outer part of the graphic will be a blurred version of the graphic itself", action="store_true")
@@ -107,7 +118,7 @@ def parse_args():
     parser.add_argument("--darken", "-d", help="The intensity of the darkening effect to be applied to every clip or 'off' to deactivate. Default: off", required=False, default=None, type=deactivatable_positive_float_type, metavar="DARKEN|off")
     parser.add_argument("--vignette", "-V", help="The base brightness of the vignette effect to be applied to every clip or 'off' to deactivate. Default: 0.8", required=False, default=0.8, type=deactivatable_positive_float_type, metavar="VIGNETTE|off")
     parser.add_argument("--transitions", "-t", help="The allowed transitions between graphic clips. Can be either a comma-separated list of names with optional weighting or a transition abbreviation. Refer to the documentation for further information", required=False, default=default_transitions(), type=transition_list_type)
-    parser.add_argument("--intro", "-i", help="An optinal graphic file that is prepended to the edit but does get transitions applied. Useful for edits with an introduction clip before the edit itself starts", required=False, default=None, type=file_type)
+    parser.add_argument("--intro", "-i", help="An optinal graphic file that is prepended to the edit but does get transitions applied. Useful for edits with an introduction clip before the edit itself starts", required=False, default=None, type=graphic_file_type)
     parser.add_argument("--intro-duration", help="Specifies the length of the edit intro. The intro is sped up / down in such a way that its end (the edit's start) directly aligns with the provided audio timestamp. If this option is not provided, the intro's natural length is used. Has no effect if no --intro is provided", required=False, default=None, type=timestamp_type)
     parser.add_argument("--intro-audio-overlap", help="Enables the edit audio to start playing while the intro is still active. If an argument is provided, it is interpret as the timestamp of the audio playback at which the intro will end. Has no effect if no --intro is provided", nargs="?", const=-1, required=False, default=None, type=timestamp_type, metavar="AUDIO-END-TIMESTAMP")
     parser.add_argument("--seed", help="The seed to be used for random choices. When generating multiple videos with the same seed and same transition setting, the random choices are guaranteed to be the same random sequence. Can be any text", required=False, default=None, type=str)
