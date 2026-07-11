@@ -83,8 +83,11 @@ class TotalLogger(TqdmProgressBarLogger):
 
 
 class VideoWriteLogger(TqdmProgressBarLogger):
-    def __init__(self):
+    def __init__(self, print_substep=True, export_only=False):
         super().__init__(print_messages=False)
+
+        self.print_substep = print_substep
+        self.export_only = export_only
 
         self.audio_started = False
         self.video_started = False
@@ -94,11 +97,25 @@ class VideoWriteLogger(TqdmProgressBarLogger):
         return super().callback(**changes)
 
     def bars_callback(self, bar, attr, value, old_value=None):
+
         if bar == "chunk" and not self.audio_started:
             self.audio_started = True
-            tqdm.write("[4/5]  Exporting audio")
+            if self.print_substep:
+                if self.export_only:
+                    tqdm.write("[1/2]  Exporting audio")
+                else:
+                    tqdm.write("[4/5]  Exporting audio")
+            else:
+                tqdm.write("Exporting audio")
+
         elif bar == "frame_index" and not self.video_started:
             self.video_started = True
-            tqdm.write("[5/5]  Rendering video")
+            if self.print_substep:
+                if self.export_only:
+                    tqdm.write("[2/2]  Rendering video")
+                else:
+                    tqdm.write("[5/5]  Rendering video")
+            else:
+                tqdm.write("Rendering video")
 
         return super().bars_callback(bar, attr, value, old_value)

@@ -4,6 +4,7 @@ from .dataholders import *
 from .generator import generate
 from .audio import analyze_audio
 from .ansi_colors import Colors
+from .mutator import subclip
 
 import random
 from tqdm import tqdm
@@ -16,6 +17,12 @@ def main():
         invoke_generator(args)
     elif args.action == "analyze-audio":
         invoke_audio_analysis(args)
+    elif args.action == "mutate-file":
+        invoke_mutation(args)
+
+def invoke_mutation(args):
+    if args.mutation == "subclip":
+        subclip(args.file, args.start, args.end, args.save_as)
 
 def invoke_audio_analysis(args):
     file = args.audio_file

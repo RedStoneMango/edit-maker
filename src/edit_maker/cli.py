@@ -1,6 +1,6 @@
 from .transition_registry import get_transitions_from_literal, get_transitions_from_abbr, default_transitions
 from .utils import raise_
-from .graphics import is_valid_graphic
+from .graphics import is_valid_graphic, is_video
 from .audio import is_valid_audio
 
 import argparse
@@ -41,6 +41,13 @@ def graphic_file_type(string):
         raise argparse.ArgumentTypeError("File '" + string  + "' does not exist")
     if not is_valid_graphic(string):
         raise argparse.ArgumentTypeError("File '" + string  + "' is not an image or video")
+    return string
+
+def mutatable_file_type(string):
+    if not os.path.isfile(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' does not exist")
+    if not is_valid_audio(string) and not is_video(string):
+        raise argparse.ArgumentTypeError("File '" + string  + "' is not an audio or video")
     return string
 
 def positive_float_type(string):
@@ -138,5 +145,13 @@ def parse_args():
 
     muatate_description="Basic mutations on audio or graphic files like cutting or volume adjustments for pre-editing data before generating an edit"
     mutate_parser = subparsers.add_parser("mutate-file", help=muatate_description, description=muatate_description)
+    mutations = mutate_parser.add_subparsers(dest="mutation")
+
+    subclip_description="Remove parts of an audio or video to keep only a certain subclip"
+    subclip_parser = mutations.add_parser("subclip", help=subclip_description, description=subclip_description)
+    subclip_parser.add_argument("file", help="The file to be subclipped", type=mutatable_file_type)
+    subclip_parser.add_argument("start", help="The start timestamp of the subclip", type=timestamp_type)
+    subclip_parser.add_argument("end", help="The end timestamp of the subclip", type=timestamp_type)
+    subclip_parser.add_argument("save_as", help="The file save the result as. If none is provided, the input file is overwritten", type=str, nargs="?", default=None) # Output is not required to exist, therefore no file_type
     
     return parser.parse_args()
