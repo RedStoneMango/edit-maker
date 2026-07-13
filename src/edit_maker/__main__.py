@@ -4,7 +4,7 @@ from .dataholders import *
 from .generator import generate
 from .audio import analyze_audio
 from .ansi_colors import Colors
-from .mutator import subclip
+from .mutator import subclip, scale_volume, cutout, concat
 
 import random
 from tqdm import tqdm
@@ -19,10 +19,20 @@ def main():
         invoke_audio_analysis(args)
     elif args.action == "mutate-file":
         invoke_mutation(args)
+    else:
+        tqdm.write("Invalid action: %s" % args.action)
 
 def invoke_mutation(args):
     if args.mutation == "subclip":
         subclip(args.file, args.start, args.end, args.save_as)
+    elif args.mutation == "volume":
+        scale_volume(args.file, args.factor, args.save_as)
+    elif args.mutation == "cutout":
+        cutout(args.file, args.cutout_start, args.cutout_end, args.save_as)
+    elif args.mutation == "concat":
+        concat(args.files, args.result)
+    else:
+        tqdm.write("Invalid mutation: %s" % args.mutation)
 
 def invoke_audio_analysis(args):
     file = args.audio_file

@@ -8,6 +8,18 @@ import os
 import re
 from moviepy.tools import convert_to_seconds
 
+class EnsureSameTypeAction(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        is_first_graphic = None
+        for value in values:
+            is_this_graphic = is_valid_graphic(value)
+            is_first_graphic = is_first_graphic or is_this_graphic
+
+            if is_first_graphic != is_this_graphic:
+                raise argparse.ArgumentError(self, "The input files have to be either all audios or all videos")
+        
+        setattr(namespace, self.dest, values)
+
 def size_type(strings):    
     if "," not in strings and "x" not in strings and "×" not in strings:
         raise argparse.ArgumentTypeError("Should be of format WIDTH,HEIGHT or WIDTHxHEIGHT")
@@ -153,5 +165,23 @@ def parse_args():
     subclip_parser.add_argument("start", help="The start timestamp of the subclip", type=timestamp_type)
     subclip_parser.add_argument("end", help="The end timestamp of the subclip", type=timestamp_type)
     subclip_parser.add_argument("save_as", help="The file save the result as. If none is provided, the input file is overwritten", type=str, nargs="?", default=None) # Output is not required to exist, therefore no file_type
-    
+
+    cutout_description="Cut out a part of an audio or video to keep only the surrounding parts"
+    cutout_parser = mutations.add_parser("cutout", help=cutout_description, description=cutout_description)
+    cutout_parser.add_argument("file", help="The file whose volume is to be changed", type=mutatable_file_type)
+    cutout_parser.add_argument("cutout_start", help="The start timestamp of the part to cut out", type=timestamp_type)
+    cutout_parser.add_argument("cutout_end", help="The end timestamp of the part to cut out", type=timestamp_type)
+    cutout_parser.add_argument("save_as", help="The file save the result as. If none is provided, the input file is overwritten", type=str, nargs="?", default=None) # Output is not required to exist, therefore no file_type
+
+    volume_description="Scale an audio or video volume by a factor to make it louder or quieter or completely remove it"
+    volume_parser = mutations.add_parser("volume", help=volume_description, description=volume_description)
+    volume_parser.add_argument("file", help="The file whose volume is to be changed", type=mutatable_file_type)
+    volume_parser.add_argument("factor", help="The factor for scaling the volume. With factor 0, the audio is removed", type=positive_float_type)
+    volume_parser.add_argument("save_as", help="The file save the result as. If none is provided, the input file is overwritten", type=str, nargs="?", default=None) # Output is not required to exist, therefore no file_type
+
+    concat_description="Concatenate audios or videos to become one large audio / video"
+    concat_parser = mutations.add_parser("concat", help=concat_description, description=concat_description)
+    concat_parser.add_argument("files", help="The files to be concatenated in the order they should occur in the result", type=mutatable_file_type, action=EnsureSameTypeAction, nargs="+")
+    concat_parser.add_argument("result", help="The audio / video file save the result as", type=str) # Output is not required to exist, therefore no file_type
+
     return parser.parse_args()
