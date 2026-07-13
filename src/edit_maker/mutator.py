@@ -48,15 +48,15 @@ def base_routine(inputs, save_as, action):
     tqdm.write("Saved as %s!" % save_as if save_as else "File mutated!")
 
 def subclip(input, start, end, save_as):
-    base_routine(input, save_as,
+    base_routine([input], save_as,
                  lambda clips: clips[0].subclipped(max(0, start), min(clips[0].duration, end)))
     
 def cutout(input, start, end, save_as):
-    base_routine(input, save_as,
+    base_routine([input], save_as,
                  lambda clips: clips[0].with_section_cut_out(max(0.0001, start), min(clips[0].duration, end)))
 
 def scale_volume(input, factor, save_as):
-    base_routine(input, save_as,
+    base_routine([input], save_as,
                  lambda clips: clips[0].without_audio() if factor == 0 and isinstance(clips[0], VideoFileClip) else clips[0].with_volume_scaled(factor))
 
 def concat(inputs, save_as):
