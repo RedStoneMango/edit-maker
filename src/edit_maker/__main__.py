@@ -46,6 +46,7 @@ def invoke_generator(args):
         BaseEditData(
             graphics=args.graphics,
             beat_tightness=args.beat_tightness,
+            beat_deviation=args.beat_deviation,
             clips_per_beat=args.clips_per_beat,
             render_options=RenderOptions(
                 blur=args.background_blur,

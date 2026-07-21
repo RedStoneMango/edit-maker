@@ -12,7 +12,7 @@ def is_valid_audio(file):
     except:
         return False
 
-def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset, log=True):
+def analyze_audio(audio_path, tightness, deviation, clips_per_beat, clips_start_offset, log=True):
     logger = default_bar_logger("bar")
     if log: logger(message="[1/5]  Analyzing audio beats")
     logger.iter_bar(progress=range(5))
@@ -27,10 +27,10 @@ def analyze_audio(audio_path, tightness, clips_per_beat, clips_start_offset, log
     audio = AudioFileClip(audio_path)
     logger.bars_callback("progress", "index", 5, 4)
 
-    clip_durations = figure_out_durations(clips_per_beat, beats, audio.duration, clips_start_offset)
+    clip_durations = figure_out_durations(clips_per_beat, beats, audio.duration, clips_start_offset, deviation)
     return AudioData(clip_durations=clip_durations, duration=audio.duration, clip=audio)
 
-def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
+def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset, beat_deviation):
     # Beat boundaries (0 -> beat1 -> beat2 -> ... -> end)
     beat_times = np.concatenate(([0.0], beats, [duration]))
     num_intervals = len(beat_times) - 1
@@ -57,9 +57,14 @@ def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset):
     durations = []
     previous = clips_start_offset
 
+     # Convert to duration list
     for t in boundaries:
         durations.append(t - previous)
         previous = t
+
+    # Make sure the first clip isn't too short (could happen if audio starts shortly before next beat)
+    if durations[0] < duration[1] - beat_deviation:
+        durations[0] += durations.pop(0)
 
     return durations
 

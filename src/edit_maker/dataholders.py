@@ -13,6 +13,7 @@ class RenderOptions:
 class BaseEditData:
     graphics: list[str]
     beat_tightness: float
+    beat_deviation: float
     clips_per_beat: float
     render_options: RenderOptions
     transitions:list[any] # Functions

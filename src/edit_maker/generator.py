@@ -31,7 +31,7 @@ def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | Non
 
 def generate_base_edit(data:BaseEditData, audio_path:str, clip_start_offset:float,
                        size:tuple[int, int]) -> BaseEditResult:
-    audio = analyze_audio(audio_path, data.beat_tightness, data.clips_per_beat, clip_start_offset)
+    audio = analyze_audio(audio_path, data.beat_tightness, data.beat_deviation, data.clips_per_beat, clip_start_offset)
 
     shuffled_clips = shuffle_for_length(data.graphics, len(audio.clip_durations))
 
