@@ -94,7 +94,7 @@ def align_audio_for_intro(audio:AudioClip, audio_time_of_end, intro_duration):
     
     diff = audio_time_of_end - intro_duration
     if diff > 0:
-        return audio.subclipped(abs(diff))
+        return audio.subclipped(abs(diff)) # TODO: Make audio more quiet during intro
     else:
         return pad_audio_beginning(audio, abs(diff))
 
