@@ -1,8 +1,10 @@
 from .dataholders import AudioData
+from .ansi_colors import Colors
 
 import librosa
 from moviepy import AudioClip, AudioFileClip, CompositeAudioClip, concatenate_audioclips
 from proglog import default_bar_logger
+from tqdm import tqdm
 import numpy as np
 import magic
 
@@ -31,6 +33,10 @@ def analyze_audio(audio_path, tightness, deviation, clips_per_beat, clips_start_
     return AudioData(clip_durations=clip_durations, duration=audio.duration, clip=audio)
 
 def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset, beat_deviation):
+    if duration <= clips_start_offset:
+        tqdm.write(Colors.RED + "Audio too short to embed intro and clips" + Colors.END)
+        exit(1)
+
     # Beat boundaries (0 -> beat1 -> beat2 -> ... -> end)
     beat_times = np.concatenate(([0.0], beats, [duration]))
     num_intervals = len(beat_times) - 1
