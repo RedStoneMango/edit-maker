@@ -25,7 +25,7 @@ def generate(general:GeneralData, base_edit:BaseEditData, intro: IntroData | Non
     base_edit_res:BaseEditResult = generate_base_edit(base_edit, general.audio, missing_audio_due_to_intro, general.size)
     res.extend(base_edit_res.clips)
 
-    padded_audio = align_audio_for_intro(base_edit_res.audio.clip, intro.audio_time_of_end, effective_intro_duration)
+    padded_audio = align_audio_for_intro(base_edit_res.audio.clip, intro.audio_time_of_end if intro else None, effective_intro_duration)
     render(res, padded_audio, general.out)
     
 

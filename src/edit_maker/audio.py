@@ -63,7 +63,7 @@ def figure_out_durations(clips_per_beat, beats, duration, clips_start_offset, be
         previous = t
 
     # Make sure the first clip isn't too short (could happen if audio starts shortly before next beat)
-    if durations[0] < duration[1] - beat_deviation:
+    if durations[0] < durations[1] - beat_deviation:
         durations[0] += durations.pop(0)
 
     return durations
