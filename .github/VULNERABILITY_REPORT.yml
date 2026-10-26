@@ -1,0 +1,25 @@
+name: Private vulnerability report
+description: Provide the information maintainers need to assess the report.
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: Summarize the vulnerability and its potential severity.
+    validations:
+      required: true
+  - type: textarea
+    id: proof_of_concept
+    attributes:
+      label: Proof of concept
+      description: Provide complete instructions for reproducing the vulnerability.
+    validations:
+      required: true
+      min_length: 100
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: Explain who is affected and how.
+    validations:
+      required: true
